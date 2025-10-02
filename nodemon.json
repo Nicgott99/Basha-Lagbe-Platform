@@ -1,0 +1,5 @@
+{
+  "nodeArgs": ["--tls-min-v1.0", "--tls-max-v1.3"],
+  "watch": ["server"],
+  "ext": "js,json"
+}
