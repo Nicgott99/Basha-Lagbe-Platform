@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -13,6 +15,43 @@ dotenv.config();
 
 const app = express();
 const __dirname = path.resolve();
+
+// ─── Security Headers (Helmet) ─────────────────────────────────────────────
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow image serving
+  contentSecurityPolicy: false                            // keep CSP flexible for dev
+}));
+
+// ─── Rate Limiters ─────────────────────────────────────────────────────────
+
+// Strict limiter for auth endpoints — prevents brute-force & credential stuffing
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 20,                    // max 20 auth requests per IP per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    statusCode: 429,
+    message: 'Too many authentication attempts. Please try again after 15 minutes.'
+  }
+});
+
+// General API limiter — keeps overall traffic manageable
+const generalLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,  // 10 minutes
+  max: 300,                   // max 300 requests per IP per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    statusCode: 429,
+    message: 'Too many requests from this IP. Please try again later.'
+  }
+});
+
+// Apply general limiter to all /server/* routes
+app.use('/server', generalLimiter);
 
 // Middleware
 app.use(cors({
@@ -66,8 +105,8 @@ app.get('/server/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/server/auth', authRoutes);
+// API Routes — auth gets the strict limiter to block brute-force attacks
+app.use('/server/auth', authLimiter, authRoutes);
 app.use('/server/user', userRoutes);
 app.use('/server/listing', listingRoutes);
 app.use('/server/review', reviewRoutes);
