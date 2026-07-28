@@ -5,7 +5,36 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-29
+
+### ✨ Added
+
+#### Security Improvements
+- **Helmet middleware** — Applies secure HTTP response headers to every response,
+  protecting against well-known web vulnerabilities (XSS, clickjacking, MIME sniffing, etc.)
+- **Tiered rate limiting** — Two-level IP-based rate limiting using `express-rate-limit`:
+  - Auth endpoints (`/server/auth/*`): strict limiter — 20 requests per 15 minutes —
+    to block brute-force and credential-stuffing attacks
+  - All API endpoints (`/server/*`): general limiter — 300 requests per 10 minutes —
+    to guard against abuse and scraping
+  - Responses include standard `RateLimit-*` headers for RFC 6585 compliance
+  - Both packages were already listed in `package.json` but were never applied
+
+#### Frontend Improvements
+- **Custom 404 Not Found page** (`client/src/pages/NotFound.jsx`) — A polished,
+  animated page shown whenever a user navigates to an invalid URL:
+  - Floating house icon with Framer Motion spring animation
+  - Gradient `404` display with animated background particles
+  - Three action buttons: Go Home, Search Properties, Go Back
+  - Bilingual copy — English + Bengali ("বাসা পাওয়া গেল না!")
+  - Fully responsive (mobile-first) with glassmorphism accents
+- **Catch-all route** added to `App.jsx` (`<Route path="*" />`) so the 404 page
+  is served for every unrecognised URL instead of a blank white screen
+
+---
+
 ## [1.0.0] - 2025-10-02
+
 
 ### 🎉 Initial Release
 

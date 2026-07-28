@@ -21,6 +21,7 @@ import AdminPanel from "./pages/AdminPanel";
 import AdminRoute from "./components/AdminRoute";
 import UserRoute from "./components/UserRoute";
 import Landing from "./pages/Landing";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -55,6 +56,9 @@ export default function App() {
           <Route path="/inquiries" element={<Inquiries />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
+
+        {/* 404 — catch-all for any unmatched route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
