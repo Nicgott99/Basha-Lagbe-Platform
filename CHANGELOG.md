@@ -5,7 +5,34 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-30
+
+### ✨ Added
+
+#### Performance & UX Improvements
+- **`useDebounce` custom hook** (`client/src/hooks/useDebounce.js`) — A reusable
+  React hook that delays propagating a changing value until after a configurable
+  idle period (default 300 ms). Prevents unnecessary re-renders and future API
+  calls that would otherwise fire on every single keystroke in search inputs.
+  - Fully documented with JSDoc and a usage example
+  - Configurable delay via the second argument
+  - Properly cleans up the `setTimeout` on each render to avoid stale closures
+- **Debounced search in Search page** — Integrated `useDebounce` (400 ms) into
+  `client/src/pages/Search.jsx` so `applyFilters` and its `useCallback`/`useEffect`
+  dependencies now respond to the debounced query instead of the raw input value
+- **`ScrollToTop` component** (`client/src/components/ScrollToTop.jsx`) — A
+  side-effect-only component placed inside `<BrowserRouter>` that automatically
+  scrolls the page to the top on every route change. Without this, React Router
+  preserves the previous scroll position across navigations, so users could land
+  halfway down the page on every link click.
+  - Uses `window.scrollTo({ top: 0, behavior: 'instant' })` for immediate reset
+  - Renders `null` — zero impact on DOM or layout
+  - Wired into `App.jsx` above `<Routes>` so it covers every page
+
+---
+
 ## [1.1.0] - 2026-07-29
+
 
 ### ✨ Added
 

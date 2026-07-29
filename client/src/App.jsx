@@ -22,12 +22,14 @@ import AdminRoute from "./components/AdminRoute";
 import UserRoute from "./components/UserRoute";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
   
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <Routes>
         {/* Public Routes */}
