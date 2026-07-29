@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import apiService from '../utils/apiService';
+import useDebounce from '../hooks/useDebounce';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -34,6 +35,10 @@ const Search = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [savedProperties, setSavedProperties] = useState(new Set());
   const [sortBy, setSortBy] = useState('relevance');
+
+  // Debounce the search query — filter only fires 400ms after the user stops typing
+  // This prevents unnecessary re-renders on every single keystroke
+  const debouncedSearchQuery = useDebounce(searchQuery, 400);
 
   // Parse URL params on load or change
   useEffect(() => {
@@ -118,12 +123,13 @@ const Search = () => {
   const applyFilters = useCallback((propertiesToFilter = properties) => {
     let filtered = [...propertiesToFilter];
 
-    if (searchQuery.trim()) {
+    // Use the debounced query so filtering waits until user stops typing
+    if (debouncedSearchQuery.trim()) {
       filtered = filtered.filter(property =>
-        property.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.location?.area?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        property.location?.district?.toLowerCase().includes(searchQuery.toLowerCase())
+        property.title?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        property.description?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        property.location?.area?.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        property.location?.district?.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
       );
     }
 
@@ -163,11 +169,11 @@ const Search = () => {
     }
 
     setFilteredProperties(filtered);
-  }, [properties, searchQuery, filters]);
+  }, [properties, debouncedSearchQuery, filters]);
 
   useEffect(() => {
     applyFilters();
-  }, [filters, searchQuery, properties, applyFilters]);
+  }, [filters, debouncedSearchQuery, properties, applyFilters]);
 
   const handleSortChange = (newSortBy) => {
     setSortBy(newSortBy);
