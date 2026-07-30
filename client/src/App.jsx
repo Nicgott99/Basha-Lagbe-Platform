@@ -23,6 +23,7 @@ import UserRoute from "./components/UserRoute";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import Footer from "./components/Footer";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -62,6 +63,7 @@ export default function App() {
         {/* 404 — catch-all for any unmatched route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

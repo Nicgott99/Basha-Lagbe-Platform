@@ -5,7 +5,40 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-07-31
+
+### ✨ Added
+
+#### UI & Mobile Improvements
+- **Working mobile navigation menu** (`client/src/components/Header.jsx`) — The
+  hamburger icon existed in the original code but clicking it did nothing at all.
+  Now fully implemented with:
+  - `isMobileMenuOpen` state toggle showing/hiding a slide-down drawer
+  - Hamburger icon switches to an ✕ close icon when the menu is open
+  - Full link set inside the drawer: Home, Search Properties, About
+  - Role-aware account section for logged-in users (Dashboard, Profile,
+    Notifications, Add Property, Inquiries, Applications, Admin Panel)
+  - Sign Up Free CTA for logged-out users
+  - Every link calls `closeMobileMenu()` so the drawer collapses on navigation
+  - Desktop layout completely unchanged
+  - Extracted `isAdminOrLandlord`, `isAdmin`, and `avatarUrl()` helpers to
+    eliminate duplicated role-check logic across desktop and mobile menus
+- **Global Footer component** (`client/src/components/Footer.jsx`) — The app had
+  no footer at all; pages ended abruptly after the last content section. Now added:
+  - Four-column responsive grid: Brand blurb, Quick Links, Property Types, Contact
+  - Brand column with bilingual tagline — English + Bengali ("বাসা লাগবে")
+  - Quick Links: Home, Search Properties, About, Sign In, Create Account
+  - Property Types: Apartment, House, Studio, Room, Commercial (linked to search)
+  - Contact column: location, phone, email with Heroicons
+  - Copyright line with dynamic current year
+  - Consistent design: `bg-gradient-to-br from-blue-900 to-blue-950` matching
+    the Header's blue/indigo palette
+  - Wired into `App.jsx` below `<Routes>` so it appears on every page
+
+---
+
 ## [1.2.0] - 2026-07-30
+
 
 ### ✨ Added
 
