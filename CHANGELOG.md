@@ -5,7 +5,45 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-08-01
+
+### ✨ Added
+
+#### Hooks & Utilities
+- **`useLocalStorage` custom hook** (`client/src/hooks/useLocalStorage.js`) — A
+  drop-in replacement for `useState` that automatically persists and restores
+  values from `localStorage`. Supports updater-function form, JSON
+  serialisation, and graceful error handling when localStorage is unavailable.
+  Integrated into `Search.jsx` so users' view-mode (grid/list) and sort
+  preference survive page refreshes without any extra configuration.
+
+#### Frontend UX
+- **Floating `BackToTop` button** (`client/src/components/BackToTop.jsx`) — A
+  polished floating action button (FAB) that appears after scrolling 300 px
+  and smoothly scrolls back to the top on click:
+  - Framer Motion `AnimatePresence` for spring enter/exit transitions
+  - Hover lifts the button 3px; tap scales it down for tactile feedback
+  - Blue/indigo gradient + shadow-glow consistent with the site palette
+  - Passive scroll listener to avoid blocking the scroll thread
+  - Accessible: `aria-label`, `title`, visible focus ring
+  - Wired into `App.jsx` after `<Footer>` so it is globally available
+
+#### Backend
+- **Structured request logger** (`server/utils/requestLogger.js`) — Replaces
+  two duplicate, ad-hoc `console.log` middlewares in `server/index.js` with a
+  single, colour-coded, response-time-aware logger:
+  - Fires on the `res.finish` event (logs after the response is sent)
+  - Colour-codes HTTP method (GET=green, POST=blue, DELETE=red, etc.)
+  - Colour-codes status codes (2xx=green, 4xx=yellow, 5xx=red)
+  - Shows response time in milliseconds (using `process.hrtime` for accuracy)
+  - Shows client IP address
+  - Respects ANSI TTY detection — plain text in non-TTY environments
+  - Silent in `NODE_ENV=test` environments
+
+---
+
 ## [1.3.0] - 2026-07-31
+
 
 ### ✨ Added
 

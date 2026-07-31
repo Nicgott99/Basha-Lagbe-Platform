@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import requestLogger from './utils/requestLogger.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -59,11 +60,10 @@ app.use(cors({
   credentials: true
 }));
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`🔄 ${req.method} ${req.url} - ${new Date().toISOString()}`);
-  next();
-});
+// ─── Structured Request Logger ─────────────────────────────────────────────
+// Replaces the two duplicate ad-hoc console.log middlewares.
+// Logs: METHOD  /path  STATUS  XXms  IP — colour-coded in terminal.
+app.use(requestLogger);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
@@ -134,11 +134,6 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`🌐 ${req.method} ${req.url} - ${new Date().toISOString()}`);
-  next();
-});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
