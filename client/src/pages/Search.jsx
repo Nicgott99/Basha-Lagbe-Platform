@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import apiService from '../utils/apiService';
 import useDebounce from '../hooks/useDebounce';
+import useLocalStorage from '../hooks/useLocalStorage';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -32,9 +33,10 @@ const Search = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState('grid');
+  // Persist view mode and sort preference across sessions with localStorage
+  const [viewMode, setViewMode] = useLocalStorage('search-view-mode', 'grid');
+  const [sortBy, setSortBy] = useLocalStorage('search-sort-by', 'relevance');
   const [savedProperties, setSavedProperties] = useState(new Set());
-  const [sortBy, setSortBy] = useState('relevance');
 
   // Debounce the search query — filter only fires 400ms after the user stops typing
   // This prevents unnecessary re-renders on every single keystroke
