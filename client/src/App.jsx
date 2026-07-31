@@ -24,6 +24,7 @@ import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
+import BackToTop from "./components/BackToTop";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
+      <BackToTop />
     </BrowserRouter>
   );
 }
