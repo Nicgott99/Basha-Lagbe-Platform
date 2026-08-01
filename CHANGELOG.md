@@ -5,7 +5,52 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-08-02
+
+### ✨ Added
+
+#### Hooks
+- **`useFetch` custom hook** (`client/src/hooks/useFetch.js`) — A reusable
+  data-fetching hook returning `{ data, loading, error, refetch }`:
+  - Uses `AbortController` to cancel in-flight requests on unmount or url change,
+    preventing "state update on unmounted component" memory leaks
+  - Sends `credentials: 'include'` by default so auth cookies are always sent
+  - Parses JSON error bodies for readable messages; ignores `AbortError` silently
+  - `refetch(url?, options?)` lets callers re-trigger or change the URL on demand
+  - Skip mode: pass `null` as the url to defer the fetch until `refetch` is called
+  - Options-ref pattern keeps the dependency array stable
+  - Documented with JSDoc and two usage examples
+  - Replaces copy-pasted `useEffect + fetch/apiRequest` patterns across pages
+
+#### Frontend UX
+- **Live password strength indicator** (`client/src/components/PasswordStrength.jsx`)
+  — Displayed below the password field in the Sign Up page:
+  - Scores the password on 5 criteria: length ≥8, lowercase, uppercase, digit,
+    special character — produces a `score` from 0 to 5
+  - Score maps to labels: Very Weak → Weak → Fair → Good → Strong
+  - Animated progress bar (300ms width transition) colour-coded red→orange→yellow→green
+  - 4-item checklist below the bar — each item gets a green checkmark as it is met
+  - Renders nothing when the password field is empty (no layout shift on load)
+  - Exports `getPasswordStrength()` separately for reuse in form validation
+  - Integrated into `SignUp.jsx` — updates live on every keystroke
+
+#### Backend Security
+- **`sanitizeInput` middleware** (`server/middleware/sanitizeInput.js`) — A new
+  Express middleware that recursively sanitises `req.body`, `req.query`, and
+  `req.params` before they reach any controller:
+  - **XSS**: strips `<script>` blocks, HTML tags, and `on*=` event attributes
+  - **NoSQL injection**: removes keys that start with `$` (MongoDB operators)
+  - **Path traversal**: removes keys containing `.` (dot-notation attacks)
+  - **Prototype pollution**: skips `__proto__`, `constructor`, `prototype` keys
+  - Handles nested objects and arrays recursively
+  - Never crashes a request — sanitisation errors are caught and logged as warnings
+  - Applied in `server/index.js` after `express.json()` so the body is parsed first
+  - New `server/middleware/` directory created to house future middleware modules
+
+---
+
 ## [1.4.0] - 2026-08-01
+
 
 ### ✨ Added
 

@@ -7,6 +7,7 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import requestLogger from './utils/requestLogger.js';
+import sanitizeInput from './middleware/sanitizeInput.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -67,6 +68,9 @@ app.use(requestLogger);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
+// Sanitise all incoming request bodies, queries and params
+// Must run after express.json() so req.body is already parsed
+app.use(sanitizeInput);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection with Stable API version
