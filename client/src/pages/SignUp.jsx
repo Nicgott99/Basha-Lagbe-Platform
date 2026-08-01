@@ -18,6 +18,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useToast } from "../hooks/useToast";
 import OAuth from "../components/OAuth";
+import PasswordStrength from "../components/PasswordStrength";
 
 export default function SignUp() {
   const [step, setStep] = useState(1); // 1: Info, 2: Verification
@@ -452,6 +453,8 @@ export default function SignUp() {
                           {errors.password}
                         </motion.p>
                       )}
+                      {/* Live password strength meter */}
+                      <PasswordStrength password={formData.password} />
                     </div>
 
                     {/* Confirm Password */}
