@@ -5,15 +5,18 @@ import {store, persistor } from "./redux/store.js";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ToastProvider from "./components/Toast.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </PersistGate>
-  </Provider>
+  <ErrorBoundary>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </PersistGate>
+    </Provider>
+  </ErrorBoundary>
 );
 
 // Expose Redux store for apiService.handleAuthError optional usage
