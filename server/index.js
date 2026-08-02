@@ -12,6 +12,7 @@ import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
 import reviewRoutes from './routes/review.route.js';
+import healthRoutes from './routes/health.route.js';
 
 dotenv.config();
 
@@ -99,15 +100,10 @@ app.get('/server/test', (req, res) => {
   res.json({ message: 'Backend is working!', timestamp: new Date().toISOString() });
 });
 
-// Health check endpoint
-app.get('/server/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
+// ─── Health Check Routes ───────────────────────────────────────────────────
+// GET /server/health        — fast liveness probe
+// GET /server/health/detail — full readiness probe (DB + memory + system)
+app.use('/server/health', healthRoutes);
 
 // API Routes — auth gets the strict limiter to block brute-force attacks
 app.use('/server/auth', authLimiter, authRoutes);

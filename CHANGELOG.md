@@ -5,7 +5,55 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-08-03
+
+### ✨ Added
+
+#### Hooks
+- **`useWindowSize` hook** (`client/src/hooks/useWindowSize.js`) — Reactively
+  tracks `window.innerWidth` / `window.innerHeight` and exposes Tailwind-aligned
+  boolean breakpoints (`isMobile`, `isTablet`, `isDesktop`):
+  - 100 ms debounced resize listener to avoid re-rendering on every pixel
+  - `passive: true` on the resize event to never block scrolling
+  - SSR-safe: initialises from `window.innerWidth` if available, otherwise 1024×768
+  - Cleans up both the listener and the pending debounce timer on unmount
+  - Integrated into `BackToTop.jsx` as a real-world usage example (button is now
+    hidden on `isMobile` screens to avoid content overlap)
+
+#### Frontend Reliability
+- **`ErrorBoundary` component** (`client/src/components/ErrorBoundary.jsx`) — A
+  React class component that catches any JavaScript error in its child tree and
+  renders a styled fallback UI instead of a blank page:
+  - `getDerivedStateFromError` → switches to fallback on any render error
+  - `componentDidCatch` → logs error + component stack (swap for Sentry in prod)
+  - "Try again" button resets the boundary by re-mounting the child tree
+  - "Go to Home" button hard-navigates to `/` as a last resort
+  - Error details shown in a collapsible `<details>` block in DEV mode only
+  - Accepts an optional `fallback` prop for per-section custom error UI
+  - Styled with site blue/indigo gradient system; PropTypes validated
+  - Wrapped around the entire React tree in `main.jsx` (outermost `<Provider>`)
+
+#### Backend
+- **Detailed health check router** (`server/routes/health.route.js`) — Replaces
+  the old minimal 4-field inline health object with a full monitoring-grade
+  endpoint suite:
+  - `GET /server/health` — fast liveness probe (no DB call), returns `status`,
+    `service`, `timestamp`, and human-formatted `uptime`
+  - `GET /server/health/detail` — full readiness probe returning:
+    - MongoDB connection state (`connected` / `disconnected` / `connecting`)
+    - Host and database name from the live Mongoose connection
+    - Node.js process memory: `rss`, `heapUsed`, `heapTotal`, `external`
+    - OS memory: total, free, used, usage percentage
+    - CPU count, platform, Node version, environment, package version
+    - `responseTimeMs` — how long the health check itself took
+  - Returns HTTP `503` when the database is disconnected
+  - Imports `os` module for native system metrics
+  - Wired into `server/index.js` replacing the old inline `app.get('/server/health')`
+
+---
+
 ## [1.5.0] - 2026-08-02
+
 
 ### ✨ Added
 
