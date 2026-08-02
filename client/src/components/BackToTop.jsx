@@ -1,6 +1,7 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUpIcon } from "@heroicons/react/24/outline";
+import useWindowSize from "../hooks/useWindowSize";
 
 /**
  * BackToTop
@@ -12,6 +13,7 @@ import { ChevronUpIcon } from "@heroicons/react/24/outline";
  */
 const BackToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { isMobile } = useWindowSize(); // hide on very small screens to avoid overlap
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +31,7 @@ const BackToTop = () => {
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isVisible && !isMobile && (
         <motion.button
           key="back-to-top"
           onClick={scrollToTop}
