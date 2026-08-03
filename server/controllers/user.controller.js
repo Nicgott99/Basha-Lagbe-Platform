@@ -3,6 +3,7 @@ import Property from "../models/property.js";
 import Review from "../models/Review.js";
 import Application from "../models/Application.js";
 import { errorHandler } from "../utils/error.js";
+import asyncHandler from "../utils/asyncHandler.js";
 import bcryptjs from "bcryptjs";
 import multer from "multer";
 import path from "path";
@@ -40,43 +41,40 @@ export const upload = multer({
 });
 
 // Get User Profile with Stats
-export const getUserProfile = async (req, res, next) => {
-  try {
-    const user = await User.findById(req.params.id);
-    
-    if (!user) {
-      return next(errorHandler(404, 'User not found!'));
-    }
-    
-    // Check if requesting user is the profile owner
-    const isOwnProfile = req.user.id === req.params.id;
-    
-    // Get user stats
-    const totalListings = await Property.countDocuments({ userRef: req.params.id });
-    const approvedListings = await Property.countDocuments({ 
-      userRef: req.params.id,
-      isApproved: true
-    });
-    const totalReviews = await Review.countDocuments({ reviewer: req.params.id });
-    const totalApplications = await Application.countDocuments({ applicantEmail: user.email });
-    
-    // Remove sensitive information
-    const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = user._doc;
-    
-    res.status(200).json({
-      success: true,
-      user: userWithoutSensitiveInfo,
-      stats: {
-        totalListings,
-        approvedListings,
-        totalReviews,
-        totalApplications
-      }
-    });
-  } catch (error) {
-    next(error);
+// asyncHandler wraps the function so any thrown error auto-forwards to next()
+export const getUserProfile = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  
+  if (!user) {
+    return next(errorHandler(404, 'User not found!'));
   }
-};
+  
+  // Check if requesting user is the profile owner
+  const isOwnProfile = req.user.id === req.params.id;
+  
+  // Get user stats
+  const totalListings = await Property.countDocuments({ userRef: req.params.id });
+  const approvedListings = await Property.countDocuments({ 
+    userRef: req.params.id,
+    isApproved: true
+  });
+  const totalReviews = await Review.countDocuments({ reviewer: req.params.id });
+  const totalApplications = await Application.countDocuments({ applicantEmail: user.email });
+  
+  // Remove sensitive information
+  const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = user._doc;
+  
+  res.status(200).json({
+    success: true,
+    user: userWithoutSensitiveInfo,
+    stats: {
+      totalListings,
+      approvedListings,
+      totalReviews,
+      totalApplications
+    }
+  });
+});
 
 // Update User Profile
 export const updateUserProfile = async (req, res, next) => {
@@ -84,7 +82,8 @@ export const updateUserProfile = async (req, res, next) => {
     return next(errorHandler(401, "You can only update your own account"));
   }
 
-  try {
+  // asyncHandler used for the inner async work
+  return asyncHandler(async (req, res, next) => {
     const { fullName, mobileNumber, address, age } = req.body;
     
     // Build update object with only provided fields
@@ -93,8 +92,6 @@ export const updateUserProfile = async (req, res, next) => {
     if (mobileNumber !== undefined) updateData.mobileNumber = mobileNumber;
     if (address !== undefined) updateData.address = address;
     if (age !== undefined) updateData.age = age;
-    
-    // Handle file upload separately if needed
     
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
@@ -114,47 +111,41 @@ export const updateUserProfile = async (req, res, next) => {
       message: "Profile updated successfully",
       user: userWithoutSensitiveInfo
     });
-  } catch (error) {
-    next(error);
-  }
+  })(req, res, next);
 };
 
 // Upload Avatar
-export const uploadAvatar = async (req, res, next) => {
-  try {
-    if (!req.file) {
-      return next(errorHandler(400, "No image file uploaded"));
-    }
-    
-    const avatarUrl = `/${req.file.path.replace(/\\/g, '/')}`;
-    
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      { $set: { avatar: avatarUrl } },
-      { new: true }
-    );
-    
-    if (!updatedUser) {
-      return next(errorHandler(404, "User not found"));
-    }
-    
-    // Remove old avatar file if it exists (except default avatar)
-    if (updatedUser.avatar && !updatedUser.avatar.includes('default-avatar') && fs.existsSync(updatedUser.avatar)) {
-      fs.unlinkSync(updatedUser.avatar);
-    }
-    
-    // Remove sensitive information from response
-    const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = updatedUser._doc;
-    
-    res.status(200).json({
-      success: true,
-      message: "Avatar uploaded successfully",
-      user: userWithoutSensitiveInfo
-    });
-  } catch (error) {
-    next(error);
+export const uploadAvatar = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return next(errorHandler(400, "No image file uploaded"));
   }
-};
+  
+  const avatarUrl = `/${req.file.path.replace(/\\/g, '/')}`;
+  
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    { $set: { avatar: avatarUrl } },
+    { new: true }
+  );
+  
+  if (!updatedUser) {
+    return next(errorHandler(404, "User not found"));
+  }
+  
+  // Remove old avatar file if it exists (except default avatar)
+  if (updatedUser.avatar && !updatedUser.avatar.includes('default-avatar') && fs.existsSync(updatedUser.avatar)) {
+    fs.unlinkSync(updatedUser.avatar);
+  }
+  
+  // Remove sensitive information from response
+  const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = updatedUser._doc;
+  
+  res.status(200).json({
+    success: true,
+    message: "Avatar uploaded successfully",
+    user: userWithoutSensitiveInfo
+  });
+});
 
 // Change Email
 export const changeEmail = async (req, res, next) => {

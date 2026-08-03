@@ -5,7 +5,45 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-08-04
+
+### ✨ Added
+
+#### Hooks
+- **`useClipboard` hook** (`client/src/hooks/useClipboard.js`) — Copies text to
+  the system clipboard and provides a timed `isCopied` feedback flag:
+  - Uses `navigator.clipboard.writeText` (modern Clipboard API, HTTPS/localhost)
+  - Falls back to `document.execCommand('copy')` for older browsers and HTTP pages
+  - `isCopied` auto-resets to `false` after a configurable `resetDelay` (default 2 s)
+  - Clears any pending reset timer before each new copy — no state race conditions
+  - `useRef` stores the timeout ID without causing extra re-renders
+  - Silent on error: logs `console.warn` and returns `false` instead of throwing
+  - Returns `true` on success, `false` on failure from the async `copy(text)` call
+  - Documented with JSDoc and two usage examples
+- **Applied in `Listing.jsx`** — removed the inline `copied` state +
+  `setTimeout` + `navigator.clipboard.writeText` boilerplate; replaced with a
+  single `const { isCopied, copy } = useClipboard()` call. No user-visible
+  behaviour change.
+
+#### Backend
+- **`asyncHandler` utility** (`server/utils/asyncHandler.js`) — A one-line
+  higher-order function that wraps any async Express handler and automatically
+  forwards any rejected Promise to `next()`:
+  - Pattern: `const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);`
+  - Eliminates the `try { ... } catch (error) { next(error); }` boilerplate that
+    appears ~50+ times across all controllers in this project
+  - The returned function is a standard Express `RequestHandler` — compatible
+    with `app.use()`, `router.get()`, `router.post()`, etc.
+  - Fully documented with a JSDoc before/after example showing the improvement
+  - **Applied in `user.controller.js`** as the reference integration:
+    - `getUserProfile` refactored — 5 lines of try/catch removed
+    - `uploadAvatar` refactored — 4 lines of try/catch removed
+    - `updateUserProfile` refactored — inner async work wrapped with asyncHandler
+
+---
+
 ## [1.6.0] - 2026-08-03
+
 
 ### ✨ Added
 
