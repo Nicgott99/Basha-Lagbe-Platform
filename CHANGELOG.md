@@ -5,7 +5,52 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-08-05
+
+### ✨ Added
+
+#### Hooks & UX
+- **`useOnlineStatus` hook** (`client/src/hooks/useOnlineStatus.js`) — Tracks
+  browser network connectivity state reactively:
+  - Returns `{ isOnline, isOffline, since }` based on `navigator.onLine`
+  - Listens to `window.addEventListener('online' | 'offline')` — zero polling
+  - `since` is a `Date` object recording when the current status started
+    (enables "Offline for X minutes" UI messages)
+  - SSR-safe: initialises from `navigator.onLine` when `window` is available
+  - Cleans up both event listeners on unmount
+  - Documented with JSDoc and two usage examples
+
+- **`OfflineBanner` component** (`client/src/components/OfflineBanner.jsx`) —
+  Animated top banner that appears when the user loses network connectivity:
+  - Uses `useOnlineStatus` internally — accepts no props
+  - `position: fixed top-0 left-0 right-0 z-[9999]` — above all other UI
+  - Framer Motion `AnimatePresence`: slides in from `y=-60` on disconnect,
+    slides back out on reconnect
+  - Amber/orange gradient visually distinct from the blue/indigo site palette
+  - Accessible: `role="alert"` and `aria-live="assertive"` for screen readers
+  - Shows `ExclamationTriangleIcon` + message + `WifiIcon`
+  - Wired into `App.jsx` as the first child of `<BrowserRouter>`
+
+#### Frontend Polish
+- **`PropertyCard` share button upgrade** (`client/src/components/PropertyCard.jsx`)
+  — The share button previously had **zero visual feedback**:
+  - Import `useClipboard` hook and `CheckIcon`
+  - `handleShare` now `async` — properly `await`s both the Web Share API and the
+    clipboard fallback so errors are caught correctly
+  - Web Share API path: `navigator.share()` is tried first; if the user cancels
+    or the API is unavailable, falls through to `copy(shareUrl)` instead of
+    silently doing nothing
+  - Description truncated to 120 chars before passing to the Share API
+  - On desktop (or when the share sheet is dismissed): clipboard link is copied
+    via `useClipboard({ resetDelay: 2000 })`
+  - Share button icon swaps from `ShareIcon` → `CheckIcon` (green) when copied
+  - Tooltip label: `"Share property"` → `"Link copied!"` during the 2 s window
+  - `"Copied!"` pill tooltip appears to the left of the button while `isCopied`
+
+---
+
 ## [1.7.0] - 2026-08-04
+
 
 ### ✨ Added
 

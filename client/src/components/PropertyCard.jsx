@@ -3,6 +3,7 @@ import apiService from '../utils/apiService';
 import ContactModal from './ContactModal';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import useClipboard from '../hooks/useClipboard';
 import {
   HeartIcon,
   ShareIcon,
@@ -11,7 +12,8 @@ import {
   EyeIcon,
   PhoneIcon,
   StarIcon,
-  CurrencyDollarIcon
+  CurrencyDollarIcon,
+  CheckIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
 
@@ -30,6 +32,8 @@ const PropertyCard = ({
   const [imageError, setImageError] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [landlord, setLandlord] = useState(null);
+  // useClipboard provides isCopied feedback state and a safe copy function
+  const { isCopied, copy } = useClipboard({ resetDelay: 2000 });
 
   const handleSave = (e) => {
     e.stopPropagation();
@@ -64,17 +68,24 @@ const PropertyCard = ({
     }
   };
 
-  const handleShare = (e) => {
+  const handleShare = async (e) => {
     e.stopPropagation();
+    const shareUrl = window.location.origin + `/property/${property._id}`;
     if (navigator.share) {
-      navigator.share({
-        title: property.title,
-        text: property.description,
-        url: window.location.origin + `/property/${property._id}`
-      });
+      // Web Share API — native sheet on mobile, ignored if it throws
+      try {
+        await navigator.share({
+          title: property.title,
+          text:  property.description?.slice(0, 120),
+          url:   shareUrl,
+        });
+      } catch {
+        // User cancelled or API not available — fall through to clipboard
+        await copy(shareUrl);
+      }
     } else {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(window.location.origin + `/property/${property._id}`);
+      // Desktop fallback: copy link with visual feedback via useClipboard
+      await copy(shareUrl);
     }
   };
 
@@ -184,13 +195,24 @@ const PropertyCard = ({
                 <HeartIcon className="w-5 h-5 text-gray-600 hover:text-red-500" />
               )}
             </motion.button>
+            {/* Share button — shows checkmark + 'Copied!' tooltip when isCopied */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleShare}
-              className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
+              title={isCopied ? 'Link copied!' : 'Share property'}
+              className="relative p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
             >
-              <ShareIcon className="w-5 h-5 text-gray-600 hover:text-blue-500" />
+              {isCopied ? (
+                <CheckIcon className="w-5 h-5 text-green-500" />
+              ) : (
+                <ShareIcon className="w-5 h-5 text-gray-600 hover:text-blue-500" />
+              )}
+              {isCopied && (
+                <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 whitespace-nowrap bg-gray-900 text-white text-xs px-2 py-1 rounded pointer-events-none">
+                  Copied!
+                </span>
+              )}
             </motion.button>
           </div>
         )}
