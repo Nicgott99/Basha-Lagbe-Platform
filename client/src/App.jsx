@@ -25,12 +25,14 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop";
+import OfflineBanner from "./components/OfflineBanner";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
   
   return (
     <BrowserRouter>
+      <OfflineBanner />
       <ScrollToTop />
       <Header />
       <Routes>
