@@ -19,19 +19,14 @@ export const verifyToken = (req, res, next) => {
                 (req.headers.authorization && req.headers.authorization.startsWith('Bearer') ? 
                  req.headers.authorization.split(' ')[1] : null);
                  
-  console.log(`🔍 DEBUG: Token verification - Token exists: ${!!token}, JWT_SECRET exists: ${!!JWT_SECRET}`);
-  
   if (!token) {
-    console.log('🔍 DEBUG: No token provided');
     return next(errorHandler(401, "Unauthorized: No token provided"));
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      console.log('🔍 DEBUG: Token verification failed:', err.message);
       return next(errorHandler(403, "Forbidden: Invalid or expired token"));
     }
-    console.log('🔍 DEBUG: Token verification successful, user:', { id: user.id, email: user.email, role: user.role });
     req.user = user;
     next();
   });
