@@ -5,7 +5,72 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-08-06
+
+### ✨ Added
+
+#### Hooks
+- **`useFormValidation` hook** (`client/src/hooks/useFormValidation.js`) — A
+  reusable form state + validation hook:
+  - Accepts `initialValues` and `validationRules` objects
+  - Each rule: `(value, formData) => errorString | ''` — supports cross-field
+    validation (e.g. password === confirmPassword)
+  - `handleChange`: standard onChange, clears field error live after touch
+  - `handleBlur`: validates on field blur (standard UX — errors after leaving)
+  - `validateAll()`: runs all rules at once, returns boolean (for onSubmit)
+  - `setFieldValue(name, value)`: for custom inputs / date pickers
+  - `resetForm()` / `resetErrors()`: full and partial reset
+  - `isValid` boolean for disabling submit buttons
+  - `isDirty` boolean to guard unsaved-changes warnings
+  - Eliminates copy-pasted form state across SignIn, SignUp, ForgotPassword,
+    AddProperty, Profile pages
+
+- **`useMediaQuery` hook** (`client/src/hooks/useMediaQuery.js`) — Evaluates
+  any CSS media query string and returns a reactive boolean:
+  - Uses `window.matchMedia` API with a `MediaQueryList` change listener
+  - More flexible than `useWindowSize` — matches any CSS media feature:
+    `(prefers-color-scheme: dark)`, `(prefers-reduced-motion: reduce)`,
+    arbitrary `min-width`/`max-width` ranges, orientation, etc.
+  - Modern `addEventListener('change')` API with `addListener` fallback for
+    Safari < 14
+  - SSR-safe: returns `false` when `window` is undefined
+  - Re-evaluates immediately when the `query` prop changes
+  - Documented with 4 usage examples including Tailwind breakpoint equivalents
+
+#### Components
+- **`SkeletonCard` component** (`client/src/components/SkeletonCard.jsx`) — A
+  shimmer placeholder that matches the `PropertyCard` layout exactly:
+  - `ShimmerLine` sub-component: configurable shimmer bar (width/height)
+  - `SingleSkeletonCard`: image area + title + location + stats + description
+    (description only in `default` variant) + price + action stubs
+  - Main `SkeletonCard` export renders `count` cards via `Array.from()`
+  - `variant` prop (`default`/`compact`/`minimal`) matches `PropertyCard`
+  - `aria-hidden="true"` on each card (purely decorative loading UI)
+  - PropTypes validated
+  - `@keyframes shimmer` + `.animate-shimmer` utility added to `index.css`
+    using `bg-[length:200%_100%]` + `background-position` sweep technique
+
+#### Backend Security & Quality
+- **Remove debug logs from `verifyUser.js`** — 4 `console.log('DEBUG:...')`
+  statements removed from `verifyToken`:
+  - They leaked token existence, JWT secret presence, JWT error messages,
+    and decoded `id`/`email`/`role` to server logs on every request
+  - Production auth middleware should be silent on success
+
+- **`validatePagination` middleware** (`server/middleware/validatePagination.js`):
+  - Parses and sanitises `req.query.page`, `limit`, `sort` before controllers
+  - `page`: defaults 1, clamped 1–10 000, NaN → 1
+  - `limit`: defaults 12, clamped 1–100, NaN → 12
+  - `sort`: validated against allowlist of 7 values; returns 400 on unknown sort
+  - Sets `req.pagination = { page, limit, skip, sort, sortRaw }` — controllers
+    just destructure instead of doing their own `parseInt`
+  - `'relevance'` maps to `{ score: { $meta: 'textScore' } }` for full-text search
+  - Wired into `listing.route.js` for `GET /get`, `/all`, and `/search`
+
+---
+
 ## [1.8.0] - 2026-08-05
+
 
 ### ✨ Added
 
