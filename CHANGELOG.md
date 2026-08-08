@@ -5,7 +5,60 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-08-09
+
+### ✨ Added
+
+#### Hooks
+- **`useCountdown` hook** (`client/src/hooks/useCountdown.js`) — A reusable
+  countdown timer with `start`, `stop`, and `reset` controls:
+  - Accepts `{ initialSeconds, autoStart, onComplete }` options
+  - Returns `{ count, isRunning, isDone, start, stop, reset }`
+  - `onComplete` callback fires when count reaches zero
+  - `autoStart: true` starts counting immediately on mount
+  - Keeps `onComplete` in a ref to avoid stale closure bugs
+  - Cleans up `setTimeout` on unmount and on each `start()` call
+  - Integrated into `SignIn.jsx` — replaces the manual `resendTimer` state
+    + `useEffect` countdown (5 lines removed from SignIn)
+
+- **`usePrevious` hook** (`client/src/hooks/usePrevious.js`) — Returns the
+  value that any state/prop held during the previous render:
+  - One-liner pattern: `useRef + useEffect` stored in a single reusable hook
+  - Optional `initialValue` for the very first render (defaults to `undefined`)
+  - Fully generic (TypeScript JSDoc typed as `T`)
+  - Use cases: transition direction detection, undo patterns, comparing before/after
+  - Integrated into `Notifications.jsx` to derive `paginationDirection` (1 or -1)
+    for animating pagination in the correct direction
+
+#### Components
+- **`Tooltip` component** (`client/src/components/Tooltip.jsx`) — An
+  accessible, animated tooltip that replaces browser-native `title=""`:
+  - Supports `top` / `bottom` / `left` / `right` placement
+  - Configurable `delay` prop (default 400ms) — prevents tooltip flicker
+  - Framer Motion `AnimatePresence` with directional fade+scale animation
+    (`y: ±4` for top/bottom, `x: ±4` for left/right)
+  - `role="tooltip"` for screen reader accessibility
+  - Shows on `mouseenter` + `focus`, hides on `mouseleave` + `blur`
+  - `pointer-events-none` on the bubble so it never interferes with clicks
+  - Dark charcoal bubble (`bg-gray-900`) for contrast on any background
+  - PropTypes validated; renders `children` directly when `content` is empty
+  - 3 usage examples in JSDoc
+
+#### Backend
+- **`requestTimeout` middleware** (`server/middleware/requestTimeout.js`) —
+  Kills any request that has not received a response within a time limit:
+  - Default: `30_000ms` (30 seconds); per-route overridable: `requestTimeout(120_000)`
+  - On timeout: destroys the underlying TCP socket immediately to free the port
+  - Passes a `503 Service Unavailable` error to the global error handler
+  - Sets `req.timedOut = true` so controllers can check if they're still needed
+  - Clears the timer on both `res.finish` and `res.close` events
+  - Guards against firing after headers are already sent
+  - Wired globally in `server/index.js` after the request logger
+
+---
+
 ## [1.9.0] - 2026-08-06
+
 
 ### ✨ Added
 
