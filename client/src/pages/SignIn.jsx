@@ -19,6 +19,7 @@ import {
 import { signInFailure, signInStart, signInSuccess } from "../redux/users/userSlice";
 import { useToast } from "../hooks/useToast";
 import OAuth from "../components/OAuth";
+import useCountdown from "../hooks/useCountdown";
 
 export default function SignIn() {
   const location = useLocation();
@@ -30,7 +31,8 @@ export default function SignIn() {
   const [verificationEmail, setVerificationEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  const [resendTimer, setResendTimer] = useState(0);
+  // useCountdown replaces the manual resendTimer state + useEffect countdown
+  const { count: resendTimer, isRunning: resendActive, start: startResendTimer } = useCountdown({ initialSeconds: 60 });
   
   const { loading } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -45,14 +47,6 @@ export default function SignIn() {
       setFormData({ email: "hasibullah.khan.alvie@g.bracu.ac.bd", password: "" });
     }
   }, [location.state]);
-
-  // Resend timer countdown
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
 
   // Input validation
   const validateForm = () => {
