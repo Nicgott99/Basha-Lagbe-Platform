@@ -8,6 +8,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import requestLogger from './utils/requestLogger.js';
 import sanitizeInput from './middleware/sanitizeInput.js';
+import requestTimeout from './middleware/requestTimeout.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -66,6 +67,11 @@ app.use(cors({
 // Replaces the two duplicate ad-hoc console.log middlewares.
 // Logs: METHOD  /path  STATUS  XXms  IP — colour-coded in terminal.
 app.use(requestLogger);
+
+// ─── Request Timeout ───────────────────────────────────────────────────────
+// Kills requests that have not completed within 30 seconds.
+// Prevents hung DB queries or external calls from consuming server resources.
+app.use(requestTimeout(30_000));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
