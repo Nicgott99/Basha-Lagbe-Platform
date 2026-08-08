@@ -13,6 +13,7 @@ import {
   CheckIcon
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
+import usePrevious from '../hooks/usePrevious';
 
 export default function Notifications() {
   const [items, setItems] = useState([]);
@@ -23,6 +24,9 @@ export default function Notifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [filter, setFilter] = useState('all'); // all, unread, read
   const [selectedItems, setSelectedItems] = useState([]);
+  // usePrevious tracks the previous page so we can animate pagination direction
+  const prevPage = usePrevious(page, 1);
+  const paginationDirection = page >= (prevPage ?? page) ? 1 : -1;
 
   // Mock data for development since API might not be working
   const mockNotifications = [
