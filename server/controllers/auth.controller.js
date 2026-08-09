@@ -16,8 +16,6 @@ export const sendVerificationCode = async (req, res, next) => {
       return next(errorHandler(400, "Email is required"));
     }
 
-    console.log(`🔍 DEBUG: sendVerificationCode called with email: ${email}, type: ${type}`);
-
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -51,16 +49,12 @@ export const sendVerificationCode = async (req, res, next) => {
     }
 
     // Display verification code in terminal based on type
-    console.log(`🔍 DEBUG: About to display code in terminal - Type: ${type}, Email: ${email.toLowerCase()}, Code: ${verificationCode}`);
     
     if (type === 'admin-signin') {
-      console.log('🔍 DEBUG: Calling displayAdminLogin');
       displayAdminLogin(email.toLowerCase(), verificationCode);
     } else if (type === 'signup') {
-      console.log('🔍 DEBUG: Calling displayUserSignup');
       displayUserSignup(email.toLowerCase(), verificationCode);
     } else {
-      console.log('🔍 DEBUG: Calling displayVerificationCode');
       displayVerificationCode(type, email.toLowerCase(), verificationCode);
     }
 
@@ -209,9 +203,7 @@ export const completeSignup = async (req, res, next) => {
       return next(errorHandler(400, "All fields are required"));
     }
 
-    // Verify the verification code
-    console.log(`🔍 DEBUG: Completing signup - Email: ${email.toLowerCase()}, Code: ${verificationCode}`);
-    
+
     const verification = await EmailVerification.findOne({
       email: email.toLowerCase(),
       type: 'signup',
@@ -219,14 +211,6 @@ export const completeSignup = async (req, res, next) => {
       expiresAt: { $gt: new Date() }
     });
 
-    console.log(`🔍 DEBUG: Signup verification found:`, verification ? {
-      email: verification.email,
-      type: verification.type,
-      code: verification.verificationCode,
-      isUsed: verification.isUsed,
-      attempts: verification.attempts,
-      expiresAt: verification.expiresAt
-    } : 'No verification found');
 
     if (!verification) {
       return next(errorHandler(400, "Invalid or expired verification code"));
@@ -238,12 +222,9 @@ export const completeSignup = async (req, res, next) => {
     }
 
     // Verify code
-    console.log(`🔍 DEBUG: Signup code comparison - Stored: "${verification.verificationCode}", Submitted: "${verificationCode}", Match: ${verification.verificationCode === verificationCode}`);
-    
     if (verification.verificationCode !== verificationCode) {
       verification.attempts += 1;
       await verification.save();
-      console.log(`🔍 DEBUG: Signup code mismatch, attempts now: ${verification.attempts}`);
       return next(errorHandler(400, "Incorrect verification code"));
     }
 
@@ -315,16 +296,13 @@ export const completeSignup = async (req, res, next) => {
 // Sign In
 export const signin = async (req, res, next) => {
   try {
-    console.log('🔍 DEBUG: signin called with email:', req.body.email);
     const { email, password } = req.body;
 
     if (!email || !password) {
-      console.log('🔍 DEBUG: Missing email or password');
       return next(errorHandler(400, "All fields are required"));
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
-    console.log('🔍 DEBUG: User found:', !!user);
 
     if (!user) {
       return next(errorHandler(404, "User not found"));
@@ -364,13 +342,9 @@ export const signin = async (req, res, next) => {
       }
 
       // Display in terminal
-      console.log(`🔍 DEBUG: Signin verification - IsAdmin: ${isAdminLogin}, Email: ${email.toLowerCase()}, Code: ${verificationCode}`);
-      
       if (isAdminLogin) {
-        console.log('🔍 DEBUG: Displaying admin login code');
         displayAdminLogin(email.toLowerCase(), verificationCode);
       } else {
-        console.log('🔍 DEBUG: Displaying signin verification code');
         displayVerificationCode('signin', email.toLowerCase(), verificationCode);
       }
 
@@ -459,14 +433,6 @@ export const completeSignin = async (req, res, next) => {
       expiresAt: { $gt: new Date() }
     });
 
-    console.log(`🔍 DEBUG: Found verification:`, verification ? {
-      email: verification.email,
-      type: verification.type,
-      code: verification.verificationCode,
-      isUsed: verification.isUsed,
-      attempts: verification.attempts,
-      expiresAt: verification.expiresAt
-    } : 'No verification found');
 
     if (!verification) {
       return next(errorHandler(400, "Invalid or expired verification code"));
@@ -478,12 +444,9 @@ export const completeSignin = async (req, res, next) => {
     }
 
     // Verify code
-    console.log(`🔍 DEBUG: Code comparison - Stored: "${verification.verificationCode}", Submitted: "${verificationCode}", Match: ${verification.verificationCode === verificationCode}`);
-    
     if (verification.verificationCode !== verificationCode) {
       verification.attempts += 1;
       await verification.save();
-      console.log(`🔍 DEBUG: Code mismatch, attempts now: ${verification.attempts}`);
       return next(errorHandler(400, "Incorrect verification code"));
     }
 
