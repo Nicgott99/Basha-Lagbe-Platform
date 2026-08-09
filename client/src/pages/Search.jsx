@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import apiService from '../utils/apiService';
 import useDebounce from '../hooks/useDebounce';
 import useLocalStorage from '../hooks/useLocalStorage';
+import useToggle from '../hooks/useToggle';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -32,7 +33,8 @@ const Search = () => {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  // useToggle replaces: useState(false) + const toggle = () => setShowFilters(p => !p)
+  const [showFilters, toggleFilters] = useToggle(false);
   // Persist view mode and sort preference across sessions with localStorage
   const [viewMode, setViewMode] = useLocalStorage('search-view-mode', 'grid');
   const [sortBy, setSortBy] = useLocalStorage('search-sort-by', 'relevance');
