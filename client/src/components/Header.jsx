@@ -1,9 +1,10 @@
-﻿import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 import { signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../redux/users/userSlice";
 import { useToast } from "../hooks/useToast";
 import apiService from "../utils/apiService";
+import useStickyHeader from "../hooks/useStickyHeader";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -13,6 +14,8 @@ export default function Header() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toast = useToast();
+  // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
+  const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -55,7 +58,12 @@ export default function Header() {
     `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || user?.email || "U")}&background=667eea&color=fff`;
 
   return (
-    <header className="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg sticky top-0 z-50">
+    <header className={[
+      "sticky top-0 z-50 transition-all duration-300",
+      isSticky
+        ? "bg-white shadow-lg text-gray-900"
+        : "bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg",
+    ].join(" ")}>
       {/* ── Top Bar ───────────────────────────────────────────────── */}
       <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
