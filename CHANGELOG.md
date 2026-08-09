@@ -5,7 +5,62 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-08-10
+
+### ✨ Added
+
+#### Hooks
+- **`useToggle` hook** (`client/src/hooks/useToggle.js`) — Returns
+  `[state, toggle, setValue]` — a boolean + stable toggle function:
+  - `toggle()` flips the value (stable `useCallback` ref — safe in deps arrays)
+  - `setValue(bool)` forces an explicit value (e.g. force-close on Escape)
+  - Replaces the repeated `const [x, setX] = useState(false)` + manual toggle
+    pattern across modals, menus, filter panels, and dropdowns
+  - `initialValue` coerced to Boolean to handle non-boolean inputs
+  - 4 usage examples in JSDoc (simple, escape key, initial open, multiple)
+  - Applied to `Search.jsx` — replaces `[showFilters, setShowFilters]`
+    with `[showFilters, toggleFilters]` from the hook
+
+- **`useStickyHeader` hook** (`client/src/hooks/useStickyHeader.js`) — Returns
+  `{ isSticky, scrollY }` based on scroll position:
+  - Threshold-based: `isSticky` becomes `true` once `scrollY > threshold`
+  - Optional `hysteresis` mode — prevents flickering near the threshold
+    (stays sticky until user scrolls back to within 10px of top)
+  - Uses a **passive** scroll listener to never block the main thread
+  - Uses `requestAnimationFrame` guard to batch scroll events (no jank)
+  - SSR-safe; runs once on mount to set state for browser-back pages
+  - Applied to `Header.jsx` — switches from blue gradient → `bg-white
+    shadow-lg` with a `transition-all duration-300` smooth cross-fade
+
+#### Components
+- **`Badge` component** (`client/src/components/Badge.jsx`) — A reusable
+  pill/chip for status labels, type tags, counts, and category filters:
+  - 8 colour variants: `default` `success` `warning` `danger` `info`
+    `purple` `orange` `gray` — each with ring, text, and background
+  - 3 sizes: `sm` `md` `lg`
+  - `dot` prop adds a coloured status dot before the text
+  - `rounded` prop switches between pill (`rounded-full`) and chip style
+  - `onClick` prop makes the badge interactive: adds `cursor-pointer`,
+    `hover:opacity-80`, `role="button"`, `tabIndex`, and keyboard Enter/Space
+  - `aria-hidden` on the dot span (decorative)
+  - PropTypes validated on all props
+  - 5 usage examples in JSDoc
+
+### 🔒 Security
+- **Remove all DEBUG `console.log` from `auth.controller.js`** — 14+ debug
+  statements removed from `sendVerificationCode`, `completeSignup`, `signin`,
+  and `completeSignin` functions:
+  - Leaked: user email addresses on every auth request
+  - Leaked: plaintext verification codes (e.g. `Code: 123456`)
+  - Leaked: internal code comparison results (`Match: false`)
+  - Leaked: full verification document contents including expiry timestamps
+  - `console.error` calls for genuine errors (email service failures,
+    unexpected caught exceptions) are intentionally kept
+
+---
+
 ## [2.0.0] - 2026-08-09
+
 
 ### ✨ Added
 
