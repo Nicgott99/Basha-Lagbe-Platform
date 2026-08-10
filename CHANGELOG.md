@@ -5,7 +5,41 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-08-11
+
+### ✨ Added
+
+#### Hooks
+- **`useScrollProgress` hook** (`client/src/hooks/useScrollProgress.js`) —
+  Returns how far the user has scrolled down the page as a 0–100 number:
+  - Accepts optional `{ target, precision }` options
+  - `target`: measure a specific scrollable DOM element instead of the window
+  - `precision`: decimal places to round to (default 1)
+  - Uses a passive scroll listener + `requestAnimationFrame` guard so the
+    handler never blocks the main thread (zero jank on any device)
+  - Clamps result to [0, 100] — handles edge cases like zero-height pages
+  - Sets initial value on mount for browser-back navigation accuracy
+  - 3 usage examples in JSDoc (basic, scrollable div, trigger at 80%)
+
+#### Components
+- **`ReadingProgressBar` component** (`client/src/components/ReadingProgressBar.jsx`) —
+  A thin gradient bar fixed to the very top of the viewport that fills
+  left-to-right as the user scrolls:
+  - Uses `useScrollProgress` internally — no props required
+  - Framer Motion `scaleX` animation driven by scroll progress value
+    with `transformOrigin: left` so it grows from the left edge
+  - Blue → purple → pink gradient matching the site colour palette
+  - Fades in after 2% scroll to avoid jarring appearance at the very top
+  - `height: 3px` — thin but clearly visible
+  - `z-[9998]` — sits below OfflineBanner but above all other UI elements
+  - `aria-hidden="true"` — decorative, not meaningful to screen readers
+  - Wired into `App.jsx` directly after `<OfflineBanner />` so it appears
+    on every page of the application
+
+---
+
 ## [2.1.0] - 2026-08-10
+
 
 ### ✨ Added
 

@@ -26,6 +26,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop";
 import OfflineBanner from "./components/OfflineBanner";
+import ReadingProgressBar from "./components/ReadingProgressBar";
 
 export default function App() {
   const { currentUser } = useSelector((state) => state.user);
@@ -33,6 +34,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <OfflineBanner />
+      {/* ReadingProgressBar: thin gradient line at top that fills as user scrolls */}
+      <ReadingProgressBar />
       <ScrollToTop />
       <Header />
       <Routes>
