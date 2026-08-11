@@ -5,7 +5,43 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2026-08-12
+
+### ✨ Added
+
+#### Hooks
+- **`useIntersectionObserver` hook** (`client/src/hooks/useIntersectionObserver.js`) —
+  Wraps the native IntersectionObserver API and returns `[ref, isIntersecting, entry]`:
+  - Accepts `{ root, rootMargin, threshold, freezeOnceVisible }` options
+  - `freezeOnceVisible: true` — observer disconnects after element is seen once,
+    ideal for entrance animations that should play only once per page visit
+  - Falls back to `isIntersecting: true` in browsers without IO support (IE11)
+  - Returns the raw `IntersectionObserverEntry` for advanced usage
+    (e.g. `entry.intersectionRatio` for parallax effects)
+  - Stable `updateEntry` callback via `useCallback` — no unnecessary re-renders
+  - Disconnects observer on unmount and whenever `frozen` becomes true
+  - 3 usage examples in JSDoc (entrance animation, infinite scroll sentinel,
+    visibility ratio)
+
+#### Components
+- **`FadeInSection` component** (`client/src/components/FadeInSection.jsx`) —
+  A layout wrapper that slides + fades its children in on scroll:
+  - 4 directions: `up` (default) `down` `left` `right`
+  - Configurable `delay` (seconds) for staggered multi-section layouts
+  - Configurable `duration` (default 0.6s) and `rootMargin` trigger offset
+  - Uses `useIntersectionObserver({ freezeOnceVisible: true })` — animation
+    plays only once; no "pop in every time you scroll back" effect
+  - Framer Motion cubic-bezier easing `[0.22, 1, 0.36, 1]` for natural motion
+  - PropTypes validated
+  - Integrated into `Home.jsx`:
+    - "Explore by Property Type" section heading — slides up on scroll
+    - "Featured Properties" section heading — slides up with 0.05s delay
+    - Removes two `whileInView` motion.div blocks (replaced by FadeInSection)
+
+---
+
 ## [2.2.0] - 2026-08-11
+
 
 ### ✨ Added
 

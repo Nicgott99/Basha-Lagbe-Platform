@@ -21,6 +21,7 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
+import FadeInSection from '../components/FadeInSection';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -399,23 +400,20 @@ const Home = () => {
       {/* Quick Property Types */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center px-4 py-2 bg-blue-50 rounded-full text-blue-600 text-sm font-medium mb-6"
-            >
-              <HomeIcon className="w-4 h-4 mr-2" />
-              Property Types
-            </motion.div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Explore by Property Type
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Find the perfect property type that matches your lifestyle and budget
-            </p>
-          </div>
+          <FadeInSection>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-50 rounded-full text-blue-600 text-sm font-medium mb-6">
+                <HomeIcon className="w-4 h-4 mr-2" />
+                Property Types
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Explore by Property Type
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Find the perfect property type that matches your lifestyle and budget
+              </p>
+            </div>
+          </FadeInSection>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {quickSearchTypes.map((item, index) => (
@@ -448,16 +446,12 @@ const Home = () => {
       {/* Featured Properties */}
       <section className="py-24 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center px-4 py-2 bg-purple-50 rounded-full text-purple-600 text-sm font-medium mb-6"
-            >
-              <StarIcon className="w-4 h-4 mr-2" />
-              Featured Properties
-            </motion.div>
+          <FadeInSection delay={0.05}>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center px-4 py-2 bg-purple-50 rounded-full text-purple-600 text-sm font-medium mb-6">
+                <StarIcon className="w-4 h-4 mr-2" />
+                Featured Properties
+              </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Handpicked Premium Properties
             </h2>
@@ -465,6 +459,7 @@ const Home = () => {
               Discover our carefully curated selection of the finest rental properties
             </p>
           </div>
+          </FadeInSection>
           
           {loading && (
             <div className="flex justify-center items-center py-16">
