@@ -5,7 +5,49 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-08-13
+
+### ✨ Added
+
+#### Hooks
+- **`useEventListener` hook** (`client/src/hooks/useEventListener.js`) —
+  Safely attaches DOM event listeners with guaranteed cleanup:
+  - Accepts any `EventTarget`: `window`, `document`, a DOM node, or a
+    React ref object (`{ current: ... }`) — resolved at effect time
+  - Stores the handler in a `useRef` so it's always fresh without
+    triggering re-registrations on every render (no stale closure bugs)
+  - Forwards `options` to `addEventListener` for passive/capture control
+  - Returns void; cleanup runs automatically on unmount or dependency change
+  - Null-safe: no-ops if the target doesn't support `addEventListener`
+  - 4 usage examples in JSDoc: Escape key, outside-click, passive resize,
+    attach to element ref
+  - Used internally by `ConfirmDialog` for Escape-key handling
+
+#### Components
+- **`ConfirmDialog` component** (`client/src/components/ConfirmDialog.jsx`) —
+  An accessible, animated modal that guards destructive actions:
+  - **4 intent variants**: `danger` (red), `warning` (amber), `info` (blue),
+    `success` (green) — each with matching button, icon colour, and icon
+  - **Accessibility**: `role="dialog"`, `aria-modal`, `aria-labelledby`,
+    `aria-describedby`, icon `aria-hidden`
+  - **Keyboard support**:
+    - Escape key closes via `useEventListener` (auto-cleanup guaranteed)
+    - Auto-focuses the Confirm button on open (50ms delay for animation)
+    - Tab trap cycles focus between Cancel and Confirm only
+  - **Body scroll lock**: sets `overflow: hidden` while open; restores on
+    close or unmount
+  - **Backdrop click** dismisses the dialog (disabled while `loading=true`)
+  - **Loading state**: `loading` prop shows a spinner on the confirm button
+    and disables both buttons to prevent double-submission
+  - Framer Motion backdrop (fade) + panel (scale + slide) animations
+  - `max-w-md` responsive — stacks buttons vertically on mobile
+  - PropTypes validated on all 9 props
+  - 2 usage examples in JSDoc (delete property, sign out with loading state)
+
+---
+
 ## [2.3.0] - 2026-08-12
+
 
 ### ✨ Added
 
