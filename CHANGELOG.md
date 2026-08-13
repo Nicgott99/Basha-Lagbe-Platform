@@ -5,7 +5,49 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.0] - 2026-08-14
+
+### ✨ Added
+
+#### Hooks
+- **`useIdleTimer` hook** (`client/src/hooks/useIdleTimer.js`) —
+  Detects user inactivity after a configurable timeout:
+  - Monitors 7 passive window events: `mousemove`, `mousedown`, `keydown`,
+    `touchstart`, `scroll`, `wheel`, `visibilitychange`
+  - All event listeners attached via `useEventListener` (zero boilerplate,
+    guaranteed cleanup)
+  - `onIdle` callback fires once when user goes idle (guarded by ref to
+    prevent double-firing)
+  - `onActive` callback fires once when user returns from idle
+  - `enabled` flag — set to false to pause the timer (e.g. while a modal
+    is open), safely restores active state
+  - Exposes `reset()` and `activate()` for programmatic control after
+    API calls or form saves
+  - Callbacks stored in refs — always fresh, never stale closures
+  - Default timeout: 5 minutes (configurable)
+  - 3 usage examples in JSDoc: session warning, auto-save draft, pause video
+  - Key use case: AddProperty multi-step form auto-save draft on idle
+
+#### Components
+- **`EmptyState` component** (`client/src/components/EmptyState.jsx`) —
+  A reusable, animated empty-state display that standardises "no results"
+  states across all pages:
+  - **3 icon types**: emoji string (e.g. `"🔍"`), Heroicon component
+    (e.g. `MagnifyingGlassIcon`), or image URL — all handled automatically
+  - **3 sizes**: `sm` `md` `lg` — each with matched padding, icon size,
+    title size, and button size
+  - Optional CTA button with `primary` (blue) and `outline` (gray) variants
+  - Framer Motion fade-in + slide-up on mount
+  - PropTypes validated on all props
+  - 4 usage examples in JSDoc: no results, no saved properties, empty
+    notifications (no button), Heroicon as icon
+  - **Integrated into `Search.jsx`**: replaces the 11-line ad-hoc div
+    with `<EmptyState icon={MagnifyingGlassIcon} title="No Properties Found" ... />`
+
+---
+
 ## [2.4.0] - 2026-08-13
+
 
 ### ✨ Added
 

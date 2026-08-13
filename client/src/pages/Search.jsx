@@ -6,6 +6,7 @@ import apiService from '../utils/apiService';
 import useDebounce from '../hooks/useDebounce';
 import useLocalStorage from '../hooks/useLocalStorage';
 import useToggle from '../hooks/useToggle';
+import EmptyState from '../components/EmptyState';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -663,17 +664,13 @@ const Search = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <MagnifyingGlassIcon className="w-24 h-24 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Properties Found</h3>
-            <p className="text-gray-600 mb-6">Try adjusting your search criteria or explore other areas.</p>
-            <button
-              onClick={clearFilters}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-200"
-            >
-              Clear Filters
-            </button>
-          </div>
+          // EmptyState replaces the ad-hoc no-results div — standardised across all pages
+          <EmptyState
+            icon={MagnifyingGlassIcon}
+            title="No Properties Found"
+            description="Try adjusting your search criteria or explore other areas."
+            action={{ label: 'Clear Filters', onClick: clearFilters }}
+          />
         )}
 
         {/* Load More */}
