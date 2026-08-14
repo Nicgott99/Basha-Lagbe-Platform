@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import requestLogger from './utils/requestLogger.js';
 import sanitizeInput from './middleware/sanitizeInput.js';
 import requestTimeout from './middleware/requestTimeout.js';
+import cacheControl from './middleware/cacheControl.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -78,6 +79,10 @@ app.use(cookieParser());
 // Sanitise all incoming request bodies, queries and params
 // Must run after express.json() so req.body is already parsed
 app.use(sanitizeInput);
+// ─── Cache-Control Headers ─────────────────────────────────────────────────
+// Sets per-route HTTP caching headers: public short-lived cache for listings,
+// no-store for auth/user routes to prevent sensitive data being cached.
+app.use(cacheControl);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB Connection with Stable API version
