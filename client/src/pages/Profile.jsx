@@ -21,8 +21,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { signInSuccess } from '../redux/users/userSlice';
 import { useToast } from '../hooks/useToast';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Profile() {
+  usePageTitle('My Profile');
   const { currentUser } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const { showToast } = useToast();

@@ -5,7 +5,46 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-08-15
+
+### ✨ Added
+
+#### Server Middleware
+- **`cacheControl` middleware** (`server/middleware/cacheControl.js`) —
+  Sets HTTP `Cache-Control` response headers automatically based on route:
+  - `/server/listing/get/:id` → `public, max-age=60, s-maxage=300, stale-while-revalidate=600`
+    (1 min browser / 5 min CDN / serve stale for 10 min while revalidating)
+  - `/server/listing/get` and `/search` → `public, max-age=30, s-maxage=120`
+    (30s browser / 2 min CDN — listing lists change more often than single items)
+  - `/server/admin/stats` → `public, max-age=60, s-maxage=300`
+    (dashboard stats can be short-lived public cache)
+  - `/server/auth/**` and `/server/user/**` → `private, no-store, must-revalidate`
+    (security-sensitive, never cached in any shared store)
+  - `/server/health` → `no-store` (monitoring tools always need live responses)
+  - All other routes → `private, no-cache` (validate before use)
+  - Wired into `server/index.js` after `sanitizeInput`, before static files
+  - `stale-while-revalidate` on listings: browser uses cached version
+    immediately while fetching a fresh one in the background (zero latency UX)
+
+#### Hooks
+- **`usePageTitle` hook** (`client/src/hooks/usePageTitle.js`) —
+  Dynamically updates `document.title` per page with automatic restoration:
+  - Appends ` | Basha Lagbe` suffix automatically (configurable `siteName`)
+  - `raw: true` option uses the title as-is (for landing/marketing pages)
+  - Captures the previous title in a `useRef` and restores it on unmount
+    (`restoreOnUnmount: false` available to opt out)
+  - Handles empty/null titles gracefully (falls back to site name only)
+  - 4 usage examples in JSDoc
+  - **Applied to 4 pages**:
+    - `Home.jsx` → `"Find Rental Properties in Bangladesh | Basha Lagbe"`
+    - `Search.jsx` → `"Search Properties | Basha Lagbe"`
+    - `Profile.jsx` → `"My Profile | Basha Lagbe"`
+    - `Landing.jsx` → `"Welcome to Basha Lagbe — Find Your Perfect Home"` (raw)
+
+---
+
 ## [2.5.0] - 2026-08-14
+
 
 ### ✨ Added
 

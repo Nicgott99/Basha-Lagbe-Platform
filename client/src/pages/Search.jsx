@@ -7,6 +7,7 @@ import useDebounce from '../hooks/useDebounce';
 import useLocalStorage from '../hooks/useLocalStorage';
 import useToggle from '../hooks/useToggle';
 import EmptyState from '../components/EmptyState';
+import usePageTitle from '../hooks/usePageTitle';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -20,6 +21,7 @@ import {
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 
 const Search = () => {
+  usePageTitle('Search Properties');
   const locationHook = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({

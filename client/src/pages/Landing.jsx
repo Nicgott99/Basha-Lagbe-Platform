@@ -12,8 +12,10 @@ import {
   ChartBarIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Landing() {
+  usePageTitle('Welcome to Basha Lagbe — Find Your Perfect Home', { raw: true });
   const navigate = useNavigate();
 
   const features = [
