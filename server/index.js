@@ -10,6 +10,7 @@ import requestLogger from './utils/requestLogger.js';
 import sanitizeInput from './middleware/sanitizeInput.js';
 import requestTimeout from './middleware/requestTimeout.js';
 import cacheControl from './middleware/cacheControl.js';
+import rateLimitByUser from './middleware/rateLimitByUser.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -118,9 +119,12 @@ app.use('/server/health', healthRoutes);
 
 // API Routes — auth gets the strict limiter to block brute-force attacks
 app.use('/server/auth', authLimiter, authRoutes);
-app.use('/server/user', userRoutes);
-app.use('/server/listing', listingRoutes);
-app.use('/server/review', reviewRoutes);
+// Authenticated routes get per-user rate limiting (60 req/min) in addition
+// to the shared IP-based general limiter applied above.
+// This prevents one user from exhausting limits for an entire shared network.
+app.use('/server/user',    rateLimitByUser({ max: 60 }),  userRoutes);
+app.use('/server/listing', rateLimitByUser({ max: 60 }),  listingRoutes);
+app.use('/server/review',  rateLimitByUser({ max: 30 }),  reviewRoutes);
 
 // Import and use additional routes
 import adminRoutes from './routes/admin.route.js';

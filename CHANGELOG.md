@@ -5,7 +5,43 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.0] - 2026-08-16
+
+### 🔒 Security
+
+- **`rateLimitByUser` middleware** (`server/middleware/rateLimitByUser.js`) —
+  Per-authenticated-user rate limiter complementing the existing IP-based limit:
+  - **Why IP alone is not enough**: shared networks (university, office, mobile
+    carrier NAT) mean many users share one public IP. A single heavy user or
+    bot on the same network can exhaust the IP quota, blocking innocent users.
+    Authenticated endpoints already have a verified identity via JWT — use it.
+  - Extracts the user key from `req.user.id` (set by `verifyToken`); falls
+    back to `req.ip` for anonymous/unauthenticated requests automatically
+  - Uses an in-memory `Map<string, { count, resetAt }>` store — no Redis
+    dependency needed; works out of the box
+  - Periodic cleanup interval (runs every `windowMs`) evicts expired buckets,
+    preventing unbounded memory growth in long-running processes
+  - `cleanupInterval.unref()` allows Node to exit cleanly even if the interval
+    is still scheduled
+  - Sets standard HTTP rate-limit headers on **every** response:
+    - `X-RateLimit-Limit` — configured maximum
+    - `X-RateLimit-Remaining` — requests left in current window
+    - `X-RateLimit-Reset` — Unix timestamp of window reset
+    - `Retry-After` — seconds until retry (only on 429 responses)
+  - Returns `429 Too Many Requests` via `errorHandler` (consistent with all
+    other server error responses)
+  - Accepts `{ windowMs, max, message }` options for per-route tuning
+  - **Wired into `server/index.js`** on three route groups:
+    - `/server/user`    → `rateLimitByUser({ max: 60 })` — 60 req/min per user
+    - `/server/listing` → `rateLimitByUser({ max: 60 })` — 60 req/min per user
+    - `/server/review`  → `rateLimitByUser({ max: 30 })` — stricter for reviews
+  - Works alongside (not replacing) the existing `express-rate-limit` IP limiter
+  - 3 usage examples in JSDoc (global, per-route strict, custom window)
+
+---
+
 ## [2.6.0] - 2026-08-15
+
 
 ### ✨ Added
 
