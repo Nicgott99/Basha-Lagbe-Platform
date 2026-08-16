@@ -5,7 +5,42 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-08-17
+
+### ✨ Added
+
+#### Hooks
+- **`useKeyPress` hook** (`client/src/hooks/useKeyPress.js`) —
+  Declarative hook for detecting specific keyboard key presses:
+  - Returns `isPressed: boolean` — true while the target key is held down,
+    false on key release (enables visual held-key feedback in UI)
+  - Accepts a **single key string** or an **array of keys** to match any
+    of multiple keys (e.g. `['ArrowUp', 'ArrowDown']`)
+  - `onKeyDown` callback fires once per keydown event on the matched key
+  - `onKeyUp` callback fires once per keyup event on the matched key
+  - **Modifier support**: `ctrl`, `shift`, `alt` options — each defaults
+    to false; `ctrl` also matches `event.metaKey` (Cmd on Mac)
+  - `enabled` flag — set to false to pause the listener without unmounting
+    (resets `isPressed` to false automatically)
+  - `element` option — attach to a specific DOM element instead of `window`
+  - Built on `useEventListener` — zero manual `addEventListener` calls,
+    all cleanup guaranteed
+  - `handleKeyDown` and `handleKeyUp` are stable `useCallback` references —
+    no unnecessary re-registrations on each render
+  - 5 usage examples in JSDoc: Escape, Ctrl+K shortcut, arrow navigation,
+    held-key visual feedback, disabled when modal open
+
+#### Components (Updated)
+- **`ConfirmDialog`** — upgraded Escape key handler:
+  - Replaces the manual `useEventListener('keydown', ...)` with `useKeyPress`
+  - Now uses `useKeyPress('Escape', { enabled: isOpen, onKeyDown: onClose })`
+  - Bonus fix: Escape is now correctly **disabled while `loading=true`**
+    (previous implementation would close the dialog mid-API-call)
+
+---
+
 ## [2.7.0] - 2026-08-16
+
 
 ### 🔒 Security
 

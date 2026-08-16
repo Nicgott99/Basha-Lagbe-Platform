@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from "prop-types";
-import useEventListener from "../hooks/useEventListener";
+import useKeyPress from "../hooks/useKeyPress";
 
 /**
  * ConfirmDialog
@@ -11,7 +11,7 @@ import useEventListener from "../hooks/useEventListener";
  * Features:
  *   - Locks body scroll while open (overflow: hidden)
  *   - Focuses the confirm button on open for keyboard users
- *   - Closes on Escape key via useEventListener (no manual addEventListener)
+ *   - Closes on Escape key via useKeyPress (declarative, auto-cleanup)
  *   - Closes on backdrop click
  *   - Traps focus within the dialog (Tab cycles between two buttons)
  *   - ARIA: role="dialog", aria-modal, aria-labelledby, aria-describedby
@@ -84,9 +84,10 @@ const ConfirmDialog = ({
   const confirmBtnRef = useRef(null);
   const styles        = INTENT_STYLES[intent] ?? INTENT_STYLES.danger;
 
-  // Close on Escape key — uses useEventListener for safe, auto-cleanup handling
-  useEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) onClose();
+  // Close on Escape key — useKeyPress is declarative and auto-cleans via useEventListener internally
+  useKeyPress("Escape", {
+    enabled:   isOpen,
+    onKeyDown: () => !loading && onClose(),
   });
 
   // Lock body scroll while dialog is open
