@@ -5,7 +5,44 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.0] - 2026-08-18
+
+### ✨ Added
+
+#### Hooks
+- **`useNetworkSpeed` hook** (`client/src/hooks/useNetworkSpeed.js`) —
+  Reads the browser's Network Information API to expose connection quality:
+  - Returns `{ effectiveType, downlink, rtt, saveData, isSlowConnection, isSupported }`
+  - `effectiveType`: `'slow-2g' | '2g' | '3g' | '4g' | 'unknown'`
+  - `downlink`: estimated bandwidth in Mbps (`null` when unsupported)
+  - `rtt`: round-trip time in milliseconds (`null` when unsupported)
+  - `saveData`: `true` when user has enabled browser/OS Data Saver mode
+  - `isSlowConnection`: convenience boolean — `true` on `slow-2g`/`2g` or
+    when `saveData` is on; use as the primary conditional in components
+  - `isSupported`: `false` on Safari/Firefox (graceful degradation)
+  - Listens to the connection's `'change'` event via `useEventListener`
+    for live updates as the user moves between WiFi and mobile data
+  - Also re-reads on `visibilitychange` (connection may change while tab
+    was in background)
+  - Returns safe `isSlowConnection: false, effectiveType: 'unknown'`
+    defaults on unsupported browsers — zero crashes
+  - 4 usage examples in JSDoc: lower-quality images, disable animations,
+    show connection badge, respect Data Saver
+
+#### Components (Updated)
+- **`OfflineBanner`** — upgraded from offline-only to full network quality banner:
+  - Imports `useNetworkSpeed` alongside existing `useOnlineStatus`
+  - **Priority**: offline (orange) → slow/Data-Saver (blue) → nothing
+  - Slow connection banner shows the actual `effectiveType` (e.g. `"2G"`)
+    or a special "Data Saver mode is on" message when `saveData` is true
+  - Both banners use the existing Framer Motion slide-down animation
+  - `SignalIcon` used for slow-net banner; `ExclamationTriangleIcon` for offline
+  - `aria-live="assertive"` on both for screen reader announcements
+
+---
+
 ## [2.8.0] - 2026-08-17
+
 
 ### ✨ Added
 
