@@ -11,6 +11,7 @@ import sanitizeInput from './middleware/sanitizeInput.js';
 import requestTimeout from './middleware/requestTimeout.js';
 import cacheControl from './middleware/cacheControl.js';
 import rateLimitByUser from './middleware/rateLimitByUser.js';
+import corsOptions from './middleware/corsOptions.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -59,11 +60,11 @@ const generalLimiter = rateLimit({
 // Apply general limiter to all /server/* routes
 app.use('/server', generalLimiter);
 
-// Middleware
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true
-}));
+// ─── CORS ──────────────────────────────────────────────────────────────────
+// Reads ALLOWED_ORIGINS from .env (comma-separated).
+// Falls back to localhost:5173 and :5174 for local development.
+// Exposes X-RateLimit-* headers so the frontend can handle rate-limit responses.
+app.use(cors(corsOptions));
 
 // ─── Structured Request Logger ─────────────────────────────────────────────
 // Replaces the two duplicate ad-hoc console.log middlewares.

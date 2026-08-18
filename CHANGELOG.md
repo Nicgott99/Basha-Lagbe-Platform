@@ -5,7 +5,45 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.10.0] - 2026-08-19
+
+### 🔒 Security / Configuration
+
+- **`corsOptions` middleware** (`server/middleware/corsOptions.js`) —
+  Replaces the hardcoded CORS origin list in `server/index.js` with an
+  environment-variable–driven, dynamically validated configuration:
+
+  **Problem with the previous approach**:
+  - `origin: ['http://localhost:5173', 'http://localhost:5174']` is hardcoded
+  - In production, all browser requests fail with CORS errors because the
+    real frontend domain is not in the list
+  - Updating the list requires a code change + redeploy
+
+  **Solution**:
+  - Reads `ALLOWED_ORIGINS` from `.env` as a comma-separated string
+  - Falls back to `localhost:5173` and `localhost:5174` when the variable
+    is not set (zero config needed for local development)
+  - Uses a **dynamic origin validator function** (not a static array) — each
+    request's `Origin` header is checked individually with a descriptive
+    rejection message visible in browser DevTools
+  - Requests with no `Origin` header (server-to-server, curl, Postman) are
+    allowed through — they are not cross-origin browser requests
+  - `credentials: true` — cookies and Authorization headers pass through
+  - `methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS']` — explicit allowlist
+  - `allowedHeaders` — locked to `Content-Type`, `Authorization`,
+    `X-Requested-With`, `Accept`
+  - `exposedHeaders` — exposes `X-RateLimit-Limit`, `X-RateLimit-Remaining`,
+    `X-RateLimit-Reset`, `Retry-After` (added by `rateLimitByUser`)
+  - `maxAge: 3600` — browsers cache the preflight (OPTIONS) response for
+    1 hour, eliminating repeated OPTIONS round trips
+  - Logs resolved origins once at startup: `🌐 CORS: 2 allowed origin(s): ...`
+  - Wired into `server/index.js` replacing the inline `cors({...})` call
+  - `.env` updated with commented `ALLOWED_ORIGINS` example for production
+
+---
+
 ## [2.9.0] - 2026-08-18
+
 
 ### ✨ Added
 
