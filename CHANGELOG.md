@@ -5,7 +5,53 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.11.0] - 2026-08-22
+
+### ✨ Added
+
+#### Hooks
+- **`useGeolocation` hook** (`client/src/hooks/useGeolocation.js`) —
+  Wraps the browser Geolocation API with full React state management:
+  - Returns `{ coordinates, loading, error, isSupported, isPermissionDenied, getLocation, clearLocation }`
+  - `coordinates` — full `GeolocationCoordinates` object with `latitude`,
+    `longitude`, `accuracy`, `altitude`, `heading`, `speed`
+  - `loading` — true while a position request is in-flight
+  - `error` — human-readable string (permission denied, timeout, unavailable)
+  - `isPermissionDenied` — separate boolean so the UI can hide the button
+    rather than showing a confusing error when the user has refused
+  - `isSupported` — false on browsers without Geolocation API
+  - `getLocation()` — triggers a one-shot `getCurrentPosition` request
+  - `clearLocation()` — resets all state back to initial values
+  - **`immediate: true`** option — fetches on mount automatically
+  - **`watch: true`** option — uses `watchPosition` for live tracking
+    (with `clearWatch` cleanup on unmount)
+  - **`enableHighAccuracy: false`** option (default) — conserves battery;
+    set true for GPS-level accuracy on live map features
+  - **`timeout: 10000`** — request times out after 10 seconds
+  - **`maximumAge: 60000`** — accepts cached positions up to 1 minute old
+    (avoids repeated GPS lookups for the same session)
+  - `onSuccess` and `onError` are stable `useCallback` references
+  - 4 usage examples in JSDoc: Near Me button, auto-detect on mount,
+    live tracking, conditional UI based on support/permission
+
+#### Pages (Updated)
+- **`Search.jsx`** — adds "📍 Near Me" button to the search bar:
+  - Wires `useGeolocation` and renders a Near Me button between Filters
+    and Search buttons in the sticky search header
+  - Button only renders when `isSupported && !isPermissionDenied` —
+    hidden automatically on Safari-without-permission or Firefox private mode
+  - Shows **"Detecting..."** with disabled state while fetching
+  - Turns **green with ✓ checkmark** once coordinates are acquired
+  - On success, `coordinates.latitude/longitude` are available for
+    proximity-based filtering in future iterations
+  - Tooltip shows exact coordinates on hover when detected
+  - Error message (e.g. "Location permission denied") shown inline in red
+    below the button row if geolocation fails
+
+---
+
 ## [2.10.0] - 2026-08-19
+
 
 ### 🔒 Security / Configuration
 

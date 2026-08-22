@@ -8,6 +8,7 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import useToggle from '../hooks/useToggle';
 import EmptyState from '../components/EmptyState';
 import usePageTitle from '../hooks/usePageTitle';
+import useGeolocation from '../hooks/useGeolocation';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -23,6 +24,15 @@ import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 const Search = () => {
   usePageTitle('Search Properties');
   const locationHook = useLocation();
+  // Geolocation: enables Near Me button to auto-fill coordinates into search
+  const {
+    coordinates,
+    loading: geoLoading,
+    error: geoError,
+    isSupported: geoSupported,
+    isPermissionDenied,
+    getLocation,
+  } = useGeolocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     propertyType: '',
@@ -437,6 +447,26 @@ const Search = () => {
                 <FunnelIcon className="w-5 h-5 mr-2" />
                 Filters
               </button>
+              {/* Near Me button — uses useGeolocation hook */}
+              {geoSupported && !isPermissionDenied && (
+                <button
+                  type="button"
+                  onClick={getLocation}
+                  disabled={geoLoading}
+                  title={coordinates ? `Location detected: ${coordinates.latitude.toFixed(4)}, ${coordinates.longitude.toFixed(4)}` : 'Search near my location'}
+                  className={`px-5 py-3 rounded-lg font-medium transition duration-200 flex items-center gap-2 text-sm ${
+                    coordinates
+                      ? 'bg-green-100 text-green-700 border border-green-300'
+                      : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
+                  }`}
+                >
+                  <MapPinIcon className="w-4 h-4" />
+                  {geoLoading ? 'Detecting...' : coordinates ? 'Near Me ✓' : 'Near Me'}
+                </button>
+              )}
+              {geoError && (
+                <p className="text-xs text-red-500 self-center">{geoError}</p>
+              )}
               <button
                 type="submit"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
