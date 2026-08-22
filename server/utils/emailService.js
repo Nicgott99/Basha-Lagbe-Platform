@@ -1,8 +1,26 @@
 import nodemailer from 'nodemailer';
+import { randomInt } from 'crypto';
 
-// Generate a 6-digit verification code
+/**
+ * Generate a cryptographically secure 6-digit OTP.
+ *
+ * WHY NOT Math.random():
+ *   Math.random() is a pseudo-random number generator (PRNG) seeded
+ *   deterministically by the JS engine. It is NOT suitable for security
+ *   tokens because:
+ *   - Its output can be predicted if an attacker can observe enough values
+ *   - It does not use OS entropy (e.g. /dev/urandom)
+ *   - NIST SP 800-90A explicitly excludes PRNG from approved OTP generation
+ *
+ * WHY crypto.randomInt():
+ *   - Uses the OS cryptographic entropy pool (CSPRNG)
+ *   - Uniform distribution across [min, max) with no modulo bias
+ *   - Node.js built-in — no extra dependency
+ *   - Compliant with OWASP OTP generation guidelines
+ */
 export const generateVerificationCode = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // randomInt(min, max) returns a random integer in [100000, 999999]
+  return randomInt(100_000, 1_000_000).toString();
 };
 
 // Create transporter

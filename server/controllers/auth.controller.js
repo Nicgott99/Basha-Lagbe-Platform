@@ -3,6 +3,7 @@ import EmailVerification from "../models/emailVerification.model.js";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
+import { randomBytes } from "crypto";
 import { sendVerificationEmail, generateVerificationCode, sendPasswordResetEmail, sendPasswordChangeConfirmationEmail } from "../utils/emailService.js";
 import { displayVerificationCode, displayAdminLogin, displayUserSignup, displaySuccess, displayError } from "../utils/terminalLogger.js";
 import crypto from "crypto";
@@ -610,7 +611,10 @@ export const google = async (req, res, next) => {
         });
     } else {
       // Create new user
-      const generatePassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+      // Generate a cryptographically secure random password for OAuth users.
+      // Math.random() is NOT suitable here — use crypto.randomBytes() instead.
+      // 24 bytes = 192 bits of entropy, base64url encoded to a safe string.
+      const generatePassword = randomBytes(24).toString('base64url');
       const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
 
       const newUser = new User({
@@ -696,7 +700,10 @@ export const github = async (req, res, next) => {
         });
     } else {
       // Create new user
-      const generatePassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+      // Generate a cryptographically secure random password for OAuth users.
+      // Math.random() is NOT suitable here — use crypto.randomBytes() instead.
+      // 24 bytes = 192 bits of entropy, base64url encoded to a safe string.
+      const generatePassword = randomBytes(24).toString('base64url');
       const hashedPassword = bcryptjs.hashSync(generatePassword, 10);
 
       const newUser = new User({

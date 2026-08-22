@@ -5,7 +5,52 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.12.0] - 2026-08-23
+
+### 🔒 Security — Critical Fix
+
+**Replace `Math.random()` with Node.js `crypto` CSPRNG for all security tokens**
+
+A security audit of the server codebase found 3 instances where `Math.random()`
+was used to generate security-sensitive values. `Math.random()` is a deterministic
+pseudorandom number generator (PRNG) — it is **NOT cryptographically secure** and
+must not be used for passwords, OTPs, or any security token:
+
+- Its internal state can be predicted if an attacker observes enough outputs
+- It does not use OS entropy (`/dev/urandom` or `CryptGenRandom`)
+- NIST SP 800-90A, OWASP, and the Node.js Security team all advise against it
+  for security-sensitive values
+
+**Files changed:**
+
+#### `server/utils/emailService.js`
+- **Before**: `Math.floor(100000 + Math.random() * 900000).toString()`
+- **After**: `crypto.randomInt(100_000, 1_000_000).toString()`
+- `crypto.randomInt(min, max)` is a purpose-built CSPRNG for integers
+- Uniform distribution across the full `[100000, 999999]` range with
+  no modulo bias (unlike `Math.random()` scaled by multiplication)
+- Detailed JSDoc comment explains why `Math.random()` is wrong here,
+  with references to NIST SP 800-90A and OWASP
+
+#### `server/controllers/auth.controller.js` (2 locations)
+- **Before**: `Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)`
+  — this produces only ~47 bits of entropy at best (two base-36 8-char strings)
+- **After**: `crypto.randomBytes(24).toString('base64url')`
+  — 24 bytes = **192 bits** of cryptographic entropy — unguessable
+- Applied to both the **Google OAuth** and **GitHub OAuth** new-user password
+  generation paths
+- `base64url` encoding produces a URL-safe string usable anywhere a password is
+
+**Why this matters for Basha Lagbe specifically:**
+OTPs that use `Math.random()` can be predicted by an attacker who can observe
+the server's PRNG output over time (via timing attacks or repeated sampling).
+If the OTP for email verification is predictable, an attacker can verify an
+account they don't control and take it over.
+
+---
+
 ## [2.11.0] - 2026-08-22
+
 
 ### ✨ Added
 
