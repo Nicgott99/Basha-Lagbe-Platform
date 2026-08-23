@@ -5,7 +5,58 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.0] - 2026-08-24
+
+### ✨ Added
+
+#### Server Utilities
+- **`responseFormatter` utility** (`server/utils/responseFormatter.js`) —
+  Standardises all HTTP API response shapes across the server:
+
+  **Problem**: A codebase audit found 38+ `res.status(200).json(...)` calls
+  across all controllers returning inconsistent shapes — some `{ success, user }`,
+  some `{ success, data }`, some raw arrays, one plain unwrapped object. The
+  frontend's `apiService.js` must defensively branch on every response.
+
+  **Solution**: Three exported functions, all producing a predictable envelope:
+
+  - **`sendSuccess(res, data, message, statusCode)`**
+    ```json
+    { "success": true, "statusCode": 200, "message": "...", "data": {...}, "timestamp": "..." }
+    ```
+    - `data: null` and `statusCode: 204` → sends `204 No Content` (empty body)
+    - Omits the `data` key entirely when `null` (no empty `"data": null`)
+
+  - **`sendPaginated(res, items, { page, limit, total }, message)`**
+    ```json
+    { "success": true, "data": [...], "pagination": { "page", "limit", "total", "totalPages", "hasNextPage", "hasPrevPage" } }
+    ```
+    - Derived fields (`totalPages`, `hasNextPage`, `hasPrevPage`) calculated automatically
+
+  - **`sendError(res, message, statusCode, errors)`**
+    ```json
+    { "success": false, "statusCode": 400, "message": "...", "errors": [...], "timestamp": "..." }
+    ```
+    - `errors[]` is only included when non-empty
+    - Prefer throwing via `errorHandler` for most cases; this is for direct sends
+
+  - All three include an ISO 8601 `timestamp` for logging/debugging
+  - Comprehensive JSDoc with usage examples
+
+#### Controllers (Updated)
+- **`user.controller.js`** — fully migrated to `responseFormatter`:
+  - `getUserProfile` → `sendSuccess(res, { user, stats }, '...')`
+  - `updateUserProfile` → `sendSuccess(res, { user }, '...')`
+  - `uploadAvatar` → `sendSuccess(res, { user }, '...')`
+  - `changeEmail` → `sendSuccess(res, { user }, '...')`
+  - `changePassword` → `sendSuccess(res, null, '...')` (no data needed)
+  - `deleteUserAccount` → `sendSuccess(res, null, '...')` (no data needed)
+  - `getUser` → was returning raw unwrapped object; now wrapped properly
+
+---
+
 ## [2.12.0] - 2026-08-23
+
 
 ### 🔒 Security — Critical Fix
 

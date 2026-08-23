@@ -4,6 +4,7 @@ import Review from "../models/Review.js";
 import Application from "../models/Application.js";
 import { errorHandler } from "../utils/error.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { sendSuccess } from "../utils/responseFormatter.js";
 import bcryptjs from "bcryptjs";
 import multer from "multer";
 import path from "path";
@@ -64,16 +65,15 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
   // Remove sensitive information
   const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = user._doc;
   
-  res.status(200).json({
-    success: true,
+  sendSuccess(res, {
     user: userWithoutSensitiveInfo,
     stats: {
       totalListings,
       approvedListings,
       totalReviews,
-      totalApplications
-    }
-  });
+      totalApplications,
+    },
+  }, 'User profile retrieved successfully');
 });
 
 // Update User Profile
@@ -106,11 +106,7 @@ export const updateUserProfile = async (req, res, next) => {
     // Remove sensitive information from response
     const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = updatedUser._doc;
     
-    res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      user: userWithoutSensitiveInfo
-    });
+    sendSuccess(res, { user: userWithoutSensitiveInfo }, 'Profile updated successfully');
   })(req, res, next);
 };
 
@@ -140,11 +136,7 @@ export const uploadAvatar = asyncHandler(async (req, res, next) => {
   // Remove sensitive information from response
   const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = updatedUser._doc;
   
-  res.status(200).json({
-    success: true,
-    message: "Avatar uploaded successfully",
-    user: userWithoutSensitiveInfo
-  });
+  sendSuccess(res, { user: userWithoutSensitiveInfo }, 'Avatar uploaded successfully');
 });
 
 // Change Email
@@ -190,11 +182,7 @@ export const changeEmail = async (req, res, next) => {
     // Remove sensitive information from response
     const { password: pass, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = user._doc;
     
-    res.status(200).json({
-      success: true,
-      message: "Email changed successfully",
-      user: userWithoutSensitiveInfo
-    });
+    sendSuccess(res, { user: userWithoutSensitiveInfo }, 'Email changed successfully');
   } catch (error) {
     next(error);
   }
@@ -236,10 +224,7 @@ export const changePassword = async (req, res, next) => {
     user.password = bcryptjs.hashSync(newPassword, 10);
     await user.save();
     
-    res.status(200).json({
-      success: true,
-      message: "Password changed successfully"
-    });
+    sendSuccess(res, null, 'Password changed successfully');
   } catch (error) {
     next(error);
   }
@@ -260,10 +245,7 @@ export const deleteUserAccount = async (req, res, next) => {
     
     res.clearCookie('access_token');
     
-    res.status(200).json({
-      success: true,
-      message: "Account deleted successfully"
-    });
+    sendSuccess(res, null, 'Account deleted successfully');
   } catch (error) {
     next(error);
   }
@@ -280,7 +262,7 @@ export const getUser = async (req, res, next) => {
 
     // Only return non-sensitive info
     const { password, passwordResetToken, passwordResetExpires, ...userWithoutSensitiveInfo } = user._doc;
-    res.status(200).json(userWithoutSensitiveInfo);
+    sendSuccess(res, { user: userWithoutSensitiveInfo }, 'User retrieved successfully');
   } catch (error) {
     next(error);
   }
