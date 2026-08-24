@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from "prop-types";
 import useKeyPress from "../hooks/useKeyPress";
+import useFocusReturn from "../hooks/useFocusReturn";
 
 /**
  * ConfirmDialog
@@ -10,7 +11,8 @@ import useKeyPress from "../hooks/useKeyPress";
  *
  * Features:
  *   - Locks body scroll while open (overflow: hidden)
- *   - Focuses the confirm button on open for keyboard users
+ *   - Focuses the first focusable element on open via useFocusReturn
+ *   - Returns keyboard focus to the trigger element on close (WCAG 2.4.3)
  *   - Closes on Escape key via useKeyPress (declarative, auto-cleanup)
  *   - Closes on backdrop click
  *   - Traps focus within the dialog (Tab cycles between two buttons)
@@ -81,10 +83,19 @@ const ConfirmDialog = ({
   intent      = "danger",
   loading     = false,
 }) => {
-  const confirmBtnRef = useRef(null);
-  const styles        = INTENT_STYLES[intent] ?? INTENT_STYLES.danger;
+  const styles = INTENT_STYLES[intent] ?? INTENT_STYLES.danger;
 
-  // Close on Escape key — useKeyPress is declarative and auto-cleans via useEventListener internally
+  // useFocusReturn handles:
+  //   1. On open  — focus moves to the first focusable button inside the dialog
+  //   2. On close — focus returns to whichever element triggered the dialog
+  // This replaces the manual: setTimeout(() => confirmBtnRef.current?.focus(), 50)
+  const { containerRef } = useFocusReturn(isOpen, {
+    focusSelector: '[data-confirm-dialog-btn]',  // target dialog action buttons specifically
+    delay:         60,                            // slightly longer than default to clear transition
+    returnFocus:   true,
+  });
+
+  // Close on Escape key — disabled while loading to prevent mid-request close
   useKeyPress("Escape", {
     enabled:   isOpen,
     onKeyDown: () => !loading && onClose(),
@@ -92,13 +103,7 @@ const ConfirmDialog = ({
 
   // Lock body scroll while dialog is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      // Focus confirm button for keyboard accessibility
-      setTimeout(() => confirmBtnRef.current?.focus(), 50);
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = isOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
@@ -118,6 +123,7 @@ const ConfirmDialog = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={containerRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="confirm-dialog-title"

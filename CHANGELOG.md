@@ -5,7 +5,55 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.0] - 2026-08-25
+
+### ♿ Accessibility
+
+#### Hooks
+- **`useFocusReturn` hook** (`client/src/hooks/useFocusReturn.js`) —
+  Manages keyboard focus for modals, drawers, sidebars, and any transient UI:
+
+  **Problem**: When a modal opens, keyboard users expect two things:
+  1. Focus moves INTO the modal (so they can immediately Tab through its buttons)
+  2. Focus RETURNS to the triggering element when the modal closes
+
+  Without this, focus is "lost" — it lands on the document body or stays on a
+  button that no longer makes sense in context, making the app near-unusable
+  for keyboard-only users. This is a WCAG 2.1 SC 2.4.3 (Focus Order) violation.
+
+  **Solution**:
+  - `containerRef` — attach to the modal/drawer container; hook queries within it
+  - On `isOpen` → `true`: captures `document.activeElement` as the "trigger", then
+    after `delay` ms focuses the first element matching `focusSelector` inside the
+    container (or makes the container itself focusable as a fallback)
+  - On `isOpen` → `false`: restores focus to the previously captured trigger element
+  - `focusFirst()` — imperative handle to re-focus after async content loads
+  - `returnFocusToTrigger()` — imperative handle for custom close logic
+  - **Options**:
+    - `focusSelector` — CSS selector for the first element to focus (default:
+      all standard focusable elements; override with e.g. `'[data-autofocus]'`)
+    - `delay: 50` — ms before focusing (lets entrance transitions begin first)
+    - `returnFocus: true` — set false when the trigger element itself is removed
+  - 4 JSDoc usage examples: modal, drawer with custom selector, imperative after
+    async load, disabled return focus
+  - Directly implements WCAG 2.1 SC 2.4.3 and ARIA `dialog` pattern spec
+
+#### Components (Updated)
+- **`ConfirmDialog.jsx`** — upgraded from manual `setTimeout` focus to `useFocusReturn`:
+  - Removed `useRef(null)` + `setTimeout(() => confirmBtnRef.current?.focus(), 50)`
+  - Now uses `const { containerRef } = useFocusReturn(isOpen, { focusSelector: '[data-confirm-dialog-btn]' })`
+  - `containerRef` attached to the outermost dialog `<motion.div>`
+  - `focusSelector: '[data-confirm-dialog-btn]'` targets Cancel/Confirm buttons specifically
+  - `delay: 60` — slightly longer than default to avoid focus race with Framer Motion
+  - When the dialog closes, focus now properly returns to whatever button opened it
+    (e.g. "Delete Listing" button) instead of being lost on the document body
+  - `useEffect` body for scroll-lock simplified from 7 lines to 1 (ternary)
+  - Scroll-lock and focus management are now fully separate concerns
+
+---
+
 ## [2.13.0] - 2026-08-24
+
 
 ### ✨ Added
 
