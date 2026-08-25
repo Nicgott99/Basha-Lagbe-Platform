@@ -5,7 +5,45 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.15.0] - 2026-08-26
+
+### 🔒 Security — Fail-Fast Environment Validation
+
+- **`validateEnv` startup utility** (`server/utils/validateEnv.js`) —
+  Validates all required environment variables **before any server setup runs**,
+  crashing immediately with a clear error if secrets are missing or weak:
+
+  **Problem**: The server had a hardcoded JWT_SECRET fallback in `verifyUser.js`:
+  ```js
+  const JWT_SECRET = process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369';
+  ```
+  If `JWT_SECRET` is not set in a deployment, the app silently uses this hardcoded
+  string. Anyone who reads the source code on GitHub can forge valid JWTs, bypass
+  authentication, and take over any user account. The app must REFUSE TO START.
+
+  **Solution — Fail-fast principle**:
+  - `validateEnv()` is called in `server/index.js` immediately after `dotenv.config()`
+    and before `const app = express()` — nothing runs if env is invalid
+  - **`JWT_SECRET`** — required, minimum **32 characters** (NIST HMAC-SHA256 minimum)
+  - **`MONGO_URL`** — required, minimum 10 characters
+  - **`NODE_ENV`** — required, must be one of `development | production | test`
+  - **`EMAIL_USER`** / **`EMAIL_PASS`** — warnings in dev, hard errors in production
+  - **`ALLOWED_ORIGINS`** — warning in production if unset (CORS fallback to localhost)
+  - On failure: prints a boxed error table listing every issue, then calls
+    `process.exit(1)` — deployment systems (Render, Railway, Heroku) detect the
+    non-zero exit and mark the deployment as failed
+  - On success: logs `✅  Environment validated (5 variables checked)`
+
+- **`verifyUser.js`** — removed hardcoded `JWT_SECRET` fallback:
+  - Old: `process.env.JWT_SECRET || 'BashaLagbe2025...'`
+  - New: `process.env.JWT_SECRET` — no fallback, intentionally
+  - Comment explains that `validateEnv()` guarantees the variable exists before
+    any request can reach `verifyToken`; the fallback was a false safety net
+
+---
+
 ## [2.14.0] - 2026-08-25
+
 
 ### ♿ Accessibility
 

@@ -12,6 +12,7 @@ import requestTimeout from './middleware/requestTimeout.js';
 import cacheControl from './middleware/cacheControl.js';
 import rateLimitByUser from './middleware/rateLimitByUser.js';
 import corsOptions from './middleware/corsOptions.js';
+import validateEnv from './utils/validateEnv.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -19,6 +20,10 @@ import reviewRoutes from './routes/review.route.js';
 import healthRoutes from './routes/health.route.js';
 
 dotenv.config();
+// Validate all required environment variables before doing anything else.
+// Crashes with a clear error if JWT_SECRET, MONGO_URL, or NODE_ENV are missing
+// or misconfigured — prevents the app from running with insecure defaults.
+validateEnv();
 
 const app = express();
 const __dirname = path.resolve();

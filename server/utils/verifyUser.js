@@ -2,10 +2,13 @@ import jwt from "jsonwebtoken";
 import { errorHandler } from "./error.js";
 
 /**
- * JWT Secret from environment variable with fallback
- * This ensures the token verification works even if process.env.JWT_SECRET is not set
+ * JWT Secret resolved from environment.
+ * validateEnv() (called at startup in server/index.js) guarantees this is set
+ * and at least 32 characters long before any request is ever processed.
+ * There is intentionally NO fallback — a missing secret must be a hard failure.
  */
-const JWT_SECRET = process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369';
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 /**
  * Middleware to verify JWT token from cookies or Authorization header
