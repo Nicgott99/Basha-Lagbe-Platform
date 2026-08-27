@@ -5,7 +5,50 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.17.0] - 2026-08-28
+
+### ✨ Added
+
+#### Hooks — Commit 1/2
+
+- **`useThrottle` hook** (`client/src/hooks/useThrottle.js`) — two exports:
+
+  **`useThrottle(value, interval)`** — value-based throttle:
+  - Returns a throttled version of `value` that updates at most once per `interval` ms
+  - Updates immediately on the first change, then rate-limits subsequent changes
+  - Schedules a trailing update when the last change arrives mid-interval
+  - Correct `setTimeout` cleanup on unmount and on rapid value changes
+
+  **`useThrottleCallback(callback, interval, deps)`** — callback throttle:
+  - Returns a stable throttled version of a function (like `useCallback` but throttled)
+  - Fires immediately on first call, queues trailing call for rapid invocations
+  - `deps` array like `useCallback` — memoises correctly
+  - Cleans up pending `setTimeout` on unmount
+
+  **When to use throttle vs debounce** (both now in the codebase):
+
+  | Hook | Fires | Best for |
+  |---|---|---|
+  | `useDebounce` | AFTER user stops changing | Search input, form validation |
+  | `useThrottle` | IMMEDIATELY then at most 1× per interval | Scroll, resize, mouse move, button spam guard |
+
+  4 JSDoc examples each: scroll position, window resize, search suggestions,
+  geolocation watch; and for callback: button double-submit guard, analytics tracking.
+
+#### Hooks Updated
+
+- **`useStickyHeader`** — integrated `useThrottle` for the `scrollY` return value:
+  - Added `throttleMs` option (default `80`ms ≈ 12fps)
+  - Internal raw scroll position is still captured via `requestAnimationFrame` (immediate)
+  - The throttled `scrollY` return value is rate-limited for consumers
+  - **Result**: components consuming `scrollY` re-render ~12×/s instead of ~60×/s on fast scroll
+    with zero perceptible difference in the sticky header transition
+  - Added 4th JSDoc example showing `throttleMs: 16` for high-frequency parallax use-case
+
+---
+
 ## [2.16.0] - 2026-08-27
+
 
 ### ✨ Added
 
