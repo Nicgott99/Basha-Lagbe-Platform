@@ -19,8 +19,10 @@ import {
 import { useToast } from "../hooks/useToast";
 import OAuth from "../components/OAuth";
 import PasswordStrength from "../components/PasswordStrength";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function SignUp() {
+  usePageTitle('Create Account');
   const [step, setStep] = useState(1); // 1: Info, 2: Verification
   const [formData, setFormData] = useState({
     fullName: '',

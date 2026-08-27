@@ -19,10 +19,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import AdminPanel from "./AdminPanel";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state) => state.user);
   const isAdmin = currentUser?.accountType === 'admin' || currentUser?.role === 'admin';
+  usePageTitle(isAdmin ? 'Admin Dashboard' : 'My Dashboard');
   const isLandlordOrAgent = currentUser?.accountType === 'landlord' || currentUser?.accountType === 'agent';
   
   const [stats, setStats] = useState({

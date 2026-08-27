@@ -15,8 +15,10 @@ import {
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Inquiries() {
+  usePageTitle('Inquiries');
   const [tab, setTab] = useState('my');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);

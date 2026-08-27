@@ -8,8 +8,10 @@ import {
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '../hooks/useToast';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function ForgotPassword() {
+  usePageTitle('Forgot Password');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);

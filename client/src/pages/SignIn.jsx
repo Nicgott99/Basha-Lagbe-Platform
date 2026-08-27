@@ -20,10 +20,13 @@ import { signInFailure, signInStart, signInSuccess } from "../redux/users/userSl
 import { useToast } from "../hooks/useToast";
 import OAuth from "../components/OAuth";
 import useCountdown from "../hooks/useCountdown";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function SignIn() {
   const location = useLocation();
   const [isAdminMode, setIsAdminMode] = useState(location.state?.adminMode || false);
+  // Set page title for SEO and browser tab
+  usePageTitle(isAdminMode ? 'Admin Sign In' : 'Sign In');
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [step, setStep] = useState(1); // 1: Mode Selection, 2: Email/Password, 3: Verification
   const [verificationCode, setVerificationCode] = useState("");

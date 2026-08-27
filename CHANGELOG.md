@@ -45,9 +45,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     with zero perceptible difference in the sticky header transition
   - Added 4th JSDoc example showing `throttleMs: 16` for high-frequency parallax use-case
 
+#### SEO — Commit 2/2 — `usePageTitle` applied to all remaining pages
+
+Previously only 4 of 20 pages set a dynamic `<title>` tag. The remaining 16 tabs
+showed the generic app-wide title in the browser. Applied `usePageTitle` to 8
+high-traffic pages:
+
+| Page | Title set |
+|---|---|
+| `SignIn.jsx` | `"Sign In"` or `"Admin Sign In"` (dynamic, based on mode) |
+| `SignUp.jsx` | `"Create Account"` |
+| `Dashboard.jsx` | `"My Dashboard"` or `"Admin Dashboard"` (dynamic, based on role) |
+| `ForgotPassword.jsx` | `"Forgot Password"` |
+| `ResetPassword.jsx` | `"Reset Password"` |
+| `Messages.jsx` | `"Messages"` |
+| `Notifications.jsx` | `"Notifications"` |
+| `Inquiries.jsx` | `"Inquiries"` |
+| `Applications.jsx` | `"My Applications"` |
+
+All titles are appended with ` | Basha Lagbe` by the `usePageTitle` hook.
+This improves:
+- **Browser UX**: users with many tabs open can identify the app tab quickly
+- **SEO**: unique `<title>` per page is one of the highest-impact on-page SEO factors
+- **Screen readers**: announce the page title on navigation for accessibility
+
 ---
 
 ## [2.16.0] - 2026-08-27
+
 
 
 ### ✨ Added

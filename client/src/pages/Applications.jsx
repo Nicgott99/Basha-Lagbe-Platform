@@ -17,6 +17,7 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
+import usePageTitle from '../hooks/usePageTitle';
 
 const statusOptions = [
   { key: 'under_review', label: 'Under Review', icon: ClockIcon, color: 'yellow' },
@@ -26,6 +27,7 @@ const statusOptions = [
 ];
 
 export default function Applications() {
+  usePageTitle('My Applications');
   const [tab, setTab] = useState('my');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);

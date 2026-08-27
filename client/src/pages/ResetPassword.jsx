@@ -11,8 +11,10 @@ import {
   ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '../hooks/useToast';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function ResetPassword() {
+  usePageTitle('Reset Password');
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [passwords, setPasswords] = useState({

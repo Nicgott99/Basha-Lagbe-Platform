@@ -14,8 +14,10 @@ import {
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
 import usePrevious from '../hooks/usePrevious';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Notifications() {
+  usePageTitle('Notifications');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

@@ -3,8 +3,10 @@ import { useSelector } from 'react-redux';
 import apiService from '../utils/apiService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { FaPaperPlane, FaArrowLeft, FaSearch } from 'react-icons/fa';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function Messages() {
+  usePageTitle('Messages');
   const { currentUser } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
