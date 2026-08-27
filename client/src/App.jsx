@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -27,12 +27,21 @@ import Footer from "./components/Footer";
 import BackToTop from "./components/BackToTop";
 import OfflineBanner from "./components/OfflineBanner";
 import ReadingProgressBar from "./components/ReadingProgressBar";
+import useCrossTabSync from "./hooks/useCrossTabSync";
 
-export default function App() {
+/**
+ * AppRoutes — inner component that lives inside BrowserRouter.
+ * Must be a separate component so that hooks requiring router context
+ * (useNavigate, useLocation) can be called here rather than in App.
+ */
+function AppRoutes() {
   const { currentUser } = useSelector((state) => state.user);
-  
+
+  // Sync auth state across browser tabs — signs out all tabs when one signs out
+  useCrossTabSync();
+
   return (
-    <BrowserRouter>
+    <>
       <OfflineBanner />
       {/* ReadingProgressBar: thin gradient line at top that fills as user scrolls */}
       <ReadingProgressBar />
@@ -48,7 +57,7 @@ export default function App() {
         <Route path="/listing/:listingId" element={<Listing />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        
+
         {/* User Routes */}
         <Route element={<UserRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
@@ -56,7 +65,7 @@ export default function App() {
           <Route path="/create-listing" element={<AddProperty />} />
           <Route path="/add-property" element={<AddProperty />} />
         </Route>
-        
+
         {/* Admin Routes */}
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminPanel />} />
@@ -71,6 +80,14 @@ export default function App() {
       </Routes>
       <Footer />
       <BackToTop />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }

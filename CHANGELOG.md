@@ -5,7 +5,52 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.16.0] - 2026-08-27
+
+### ✨ Added
+
+#### Hooks
+- **`useCrossTabSync` hook** (`client/src/hooks/useCrossTabSync.js`) —
+  Keeps Redux authentication state in sync across multiple browser tabs:
+
+  **Problem**: redux-persist stores auth state in `localStorage["persist:root"]`.
+  When Tab A signs out, it updates localStorage — but Tab B's in-memory Redux
+  state is untouched. Tab B still shows the user as logged in, still renders
+  their dashboard, and still makes authenticated requests — until a page refresh.
+  The reverse is also true: logging in on Tab B doesn't update Tab A's UI.
+
+  **Solution**: The browser fires a native `storage` event on all OTHER tabs
+  whenever localStorage changes. The hook listens to this event, reads the new
+  `persist:root` value, and dispatches the appropriate Redux action:
+
+  | Event | Hook Response |
+  |---|---|
+  | Tab A **signs out** | Tab B dispatches `signOutUserSuccess` + navigates to `/sign-in` |
+  | Tab A **signs in** | Tab B dispatches `signInSuccess(user)` — no redirect |
+  | Tab A **updates profile** | Tab B dispatches `signInSuccess(updatedUser)` — avatar/name in sync |
+  | `localStorage` cleared entirely | Tab B dispatches `signOutUserSuccess` + navigates to `/sign-in` |
+
+  - Handles redux-persist's double-serialised JSON format (`persist:root` →
+    parse → `.user` → parse → `.currentUser`)
+  - Silent `try/catch` on parse errors — malformed storage never crashes the app
+  - Clean `removeEventListener` on unmount — no memory leaks
+  - Only reacts to `event.key === 'persist:root'` — ignores all other
+    localStorage writes for efficiency
+  - 3 usage examples in JSDoc, plus limitations (same-origin only, does not
+    fire in the writing tab — both are browser constraints, not hook limitations)
+
+#### App Architecture (Updated)
+- **`App.jsx`** — extracted `AppRoutes` inner component:
+  - `useCrossTabSync` requires `useNavigate` which needs `BrowserRouter` context
+  - Standard React pattern: `App` renders `<BrowserRouter><AppRoutes /></BrowserRouter>`
+    and `AppRoutes` (inside the router) calls all router-dependent hooks
+  - All routes and UI are identical — this is a structural refactor only
+  - `useNavigate` import added
+
+---
+
 ## [2.15.0] - 2026-08-26
+
 
 ### 🔒 Security — Fail-Fast Environment Validation
 
