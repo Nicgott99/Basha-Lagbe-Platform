@@ -4,6 +4,7 @@ import ContactModal from './ContactModal';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import useShare from '../hooks/useShare';
+import useImageLazyLoad from '../hooks/useImageLazyLoad';
 import {
   HeartIcon,
   ShareIcon,
@@ -28,12 +29,18 @@ const PropertyCard = ({
   className = ''
 }) => {
   const navigate = useNavigate();
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [landlord, setLandlord] = useState(null);
   // useShare handles Web Share API on mobile + clipboard fallback on desktop
   const { share, isShared, status, canShare } = useShare({ resetDelay: 2000 });
+  // useImageLazyLoad defers image loading until the card scrolls near viewport
+  // rootMargin='300px' starts loading 300px before the card is visible = no pop-in
+  const {
+    ref:        imgRef,
+    currentSrc: imageSrc,
+    isLoaded:   imageLoaded,
+    hasError:   imageError,
+  } = useImageLazyLoad(property.imageUrls?.[0] || '', { rootMargin: '300px' });
 
   const handleSave = (e) => {
     e.stopPropagation();
@@ -136,16 +143,12 @@ const PropertyCard = ({
         )}
         
         <img
-          src={property.imageUrls?.[0] || '/api/placeholder/400/300'}
+          ref={imgRef}
+          src={imageSrc || '/api/placeholder/400/300'}
           alt={property.title}
-          className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
+          className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 transition-opacity ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => {
-            setImageError(true);
-            setImageLoaded(true);
-          }}
         />
         
         {/* Image Overlay */}

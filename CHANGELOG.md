@@ -5,7 +5,55 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.19.0] - 2026-08-30
+
+### ⚡ Performance — Commit 1/2
+
+#### Hooks
+- **`useImageLazyLoad` hook** (`client/src/hooks/useImageLazyLoad.js`) —
+  Defers image loading until the element scrolls near the viewport:
+
+  **Problem**: Every `PropertyCard` renders `<img src={url}>` eagerly. On a
+  Search results page with 20 listings, all 20 high-resolution images download
+  simultaneously on load. On mobile (3G/4G), this causes:
+  - 3–5× more bandwidth used on page load than necessary
+  - LCP (Largest Contentful Paint) degraded by competing image downloads
+  - Images below the fold the user never sees are still fully downloaded
+
+  **Solution**: `useImageLazyLoad(src, options)` uses `IntersectionObserver`
+  to swap a 1-byte transparent placeholder for the real image URL only when the
+  card enters the viewport (+ `rootMargin` buffer ahead of time):
+
+  1. Card renders with `src` = tiny 1×1 transparent data URI (no network request)
+  2. When card enters viewport − `rootMargin`, observer fires, real `src` is set
+  3. Browser fetches and renders the image
+  4. Observer disconnects (no more work after first visibility)
+
+  Returns:
+  - `ref` — attach to `<img>` element
+  - `currentSrc` — placeholder → real URL (set this as `<img src={currentSrc}>`)
+  - `isLoaded` — true once image has finished loading (drive opacity transitions)
+  - `isInView` — true once element entered viewport
+  - `hasError` — true if image failed to load (show fallback UI)
+  - `enabled` option — set `false` for above-the-fold/hero images (keeps eager loading)
+
+  Gracefully degrades in browsers without `IntersectionObserver` (treats all
+  images as immediately visible — same as before).
+
+#### Components Updated
+- **`PropertyCard.jsx`** — integrated `useImageLazyLoad`:
+  - Removed manual `imageLoaded` and `imageError` `useState` declarations
+  - Removed `onLoad`/`onError` handler callbacks from `<img>`
+  - Added `ref={imgRef}` and `src={imageSrc}` from the hook
+  - `rootMargin: '300px'` — starts loading 300px before card is visible
+    to ensure no visible "pop-in" as user scrolls
+  - Added `transition-opacity` to the existing `className` for smooth fade-in
+  - Net result: 0 images loaded below the fold on initial page render
+
+---
+
 ## [2.18.0] - 2026-08-29
+
 
 ### ✨ Added — Commit 1/2
 
