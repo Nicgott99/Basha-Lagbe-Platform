@@ -14,6 +14,7 @@ import rateLimitByUser from './middleware/rateLimitByUser.js';
 import corsOptions from './middleware/corsOptions.js';
 import validateEnv from './utils/validateEnv.js';
 import globalErrorHandler from './middleware/globalErrorHandler.js';
+import requestId from './middleware/requestId.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -71,6 +72,12 @@ app.use('/server', generalLimiter);
 // Falls back to localhost:5173 and :5174 for local development.
 // Exposes X-RateLimit-* headers so the frontend can handle rate-limit responses.
 app.use(cors(corsOptions));
+
+// ─── Request ID ────────────────────────────────────────────────────────────
+// Assigns a UUID to every request via req.id and X-Request-Id response header.
+// Must come before requestLogger so the ID is available in log output.
+// Allows the frontend to display a reference ID in error messages (support traces).
+app.use(requestId);
 
 // ─── Structured Request Logger ─────────────────────────────────────────────
 // Replaces the two duplicate ad-hoc console.log middlewares.

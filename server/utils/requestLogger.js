@@ -1,4 +1,4 @@
-﻿/**
+/**
  * requestLogger.js
  * A lightweight, structured HTTP request/response logger middleware for Express.
  *
@@ -66,8 +66,11 @@ const requestLogger = (req, res, next) => {
     const url     = req.originalUrl || req.url;
     const status  = res.statusCode;
     const ip      = req.ip || req.socket?.remoteAddress || '-';
+    // req.id is set by the requestId middleware (mounted before this)
+    const id      = req.id ? `${colours.dim}[req:${req.id.slice(0, 8)}]${colours.reset} ` : '';
 
     console.log(
+      `${id}` +
       `${colours.dim}[${new Date().toISOString()}]${colours.reset} ` +
       `${methodColour(method)}${colours.bold}${method.padEnd(7)}${colours.reset} ` +
       `${colours.white}${url}${colours.reset} ` +
@@ -78,5 +81,6 @@ const requestLogger = (req, res, next) => {
 
   next();
 };
+
 
 export default requestLogger;

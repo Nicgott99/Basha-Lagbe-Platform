@@ -50,9 +50,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `transition-opacity` to the existing `className` for smooth fade-in
   - Net result: 0 images loaded below the fold on initial page render
 
+### 🔍 Server — Commit 2/2
+
+#### Middleware
+- **`requestId` middleware** (`server/middleware/requestId.js`) — assigns a
+  UUID v4 to every HTTP request for distributed tracing and log correlation:
+
+  **Problem**: Server logs show repeated identical lines with no way to tell which
+  log lines belong to the same request:
+  ```
+  [ERROR] POST /server/auth/signin — 500
+  [ERROR] POST /server/auth/signin — 401
+  ```
+  When a user reports an error and gives you a timestamp, you still can't isolate
+  their specific request from dozens of concurrent requests in the logs.
+
+  **Solution**: Every request now gets a unique ID:
+  ```
+  [req:f47ac10] POST /server/auth/signin 200 43ms
+  [req:f47ac10] ValidationError: email is required
+  ```
+  All log lines for the same request share the same ID. Finding a specific
+  failing request is now `grep "req:f47ac10" server.log`.
+
+  - Uses `crypto.randomUUID()` — cryptographically random, zero dependencies
+  - Reuses `X-Request-Id` header from upstream (load balancer / API gateway)
+    if present — preserving trace IDs across service boundaries
+  - Validates incoming header with regex to prevent injection attacks
+  - Attaches to `req.id` for downstream controllers to include in their logs
+  - Sets `X-Request-Id` response header so the frontend can display a reference
+    ID in error toasts: `"Something went wrong (Ref: f47ac10b)"`
+
+#### Utils Updated
+- **`requestLogger.js`** — now includes `[req:xxxxxxxx]` prefix in each log line:
+  - Before: `[2026-08-30T00:30:00Z] POST /server/listing/get 500 12ms 127.0.0.1`
+  - After: `[req:f47ac10b] [2026-08-30T00:30:00Z] POST /server/listing/get 500 12ms 127.0.0.1`
+  - Only displayed when `req.id` is set (graceful — won't break if `requestId`
+    middleware is ever removed)
+  - First 8 chars of UUID shown (enough to be unique, compact in terminal)
+
 ---
 
 ## [2.18.0] - 2026-08-29
+
 
 
 ### ✨ Added — Commit 1/2
