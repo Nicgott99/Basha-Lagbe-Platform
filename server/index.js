@@ -13,6 +13,7 @@ import cacheControl from './middleware/cacheControl.js';
 import rateLimitByUser from './middleware/rateLimitByUser.js';
 import corsOptions from './middleware/corsOptions.js';
 import validateEnv from './utils/validateEnv.js';
+import globalErrorHandler from './middleware/globalErrorHandler.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -157,16 +158,10 @@ app.get('*', (req, res) => {
 
 
 // Global Error Handler
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  console.error(`[ERROR] ${statusCode} - ${message}`, err.stack);
-  return res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  });
-});
+// Classifies errors by type (Mongoose, JWT, MongoDB, custom) and returns
+// appropriate HTTP status codes with clean user-facing messages.
+// Stack traces and internal details are logged server-side only.
+app.use(globalErrorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5002;

@@ -46,9 +46,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `"Copy link"` on desktop — adapts to the device
   - Feedback tooltip shows `"Shared!"` vs `"Copied!"` depending on method used
 
+### 🔒 Server — Commit 2/2
+
+#### Middleware
+- **`globalErrorHandler` middleware** (`server/middleware/globalErrorHandler.js`) —
+  replaces the 9-line inline error handler in `server/index.js` with a structured,
+  classified middleware:
+
+  **Problem**: The inline handler returned `500` for every error regardless of type:
+  - Mongoose `ValidationError` → 500 with raw Mongoose message
+  - Mongoose `CastError` (bad ObjectId) → 500 with confusing Mongoose message
+  - MongoDB duplicate key (E11000) → 500 leaking collection/index names to client
+  - JWT `JsonWebTokenError` / `TokenExpiredError` → 500 instead of proper 401
+  - JSON parse errors → 500 instead of 400
+
+  **Solution**: Each error class gets its own handler:
+
+  | Error type | Status | Client message |
+  |---|---|---|
+  | Custom `errorHandler()` | as-set | `err.message` (already safe) |
+  | Mongoose `ValidationError` | 422 | field-level validation messages array |
+  | Mongoose `CastError` | 400 | "Invalid X: value is not a valid ID format" |
+  | MongoDB E11000 (duplicate) | 409 | "Email already exists" |
+  | `JsonWebTokenError` | 401 | "Invalid authentication token" |
+  | `TokenExpiredError` | 401 | "Token has expired. Please sign in again" |
+  | JSON `SyntaxError` body | 400 | "Invalid JSON in request body" |
+  | Everything else (prod) | 500 | "An unexpected error occurred" |
+  | Everything else (dev) | 500 | `err.message` + `stack` in response |
+
+  - MongoDB/Mongoose internals (collection names, index keys) never exposed to client
+  - Stack traces logged server-side always; sent to client only in development
+  - `AbortError` / `ENOENT` / `EPIPE` classified as 500 with generic message
+  - Consistent envelope: `{ success, statusCode, message, errors?, timestamp }`
+
 ---
 
 ## [2.17.0] - 2026-08-28
+
 
 
 ### ✨ Added
