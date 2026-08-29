@@ -3,7 +3,7 @@ import apiService from '../utils/apiService';
 import ContactModal from './ContactModal';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import useClipboard from '../hooks/useClipboard';
+import useShare from '../hooks/useShare';
 import {
   HeartIcon,
   ShareIcon,
@@ -32,8 +32,8 @@ const PropertyCard = ({
   const [imageError, setImageError] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [landlord, setLandlord] = useState(null);
-  // useClipboard provides isCopied feedback state and a safe copy function
-  const { isCopied, copy } = useClipboard({ resetDelay: 2000 });
+  // useShare handles Web Share API on mobile + clipboard fallback on desktop
+  const { share, isShared, status, canShare } = useShare({ resetDelay: 2000 });
 
   const handleSave = (e) => {
     e.stopPropagation();
@@ -68,25 +68,16 @@ const PropertyCard = ({
     }
   };
 
-  const handleShare = async (e) => {
+  const handleShare = (e) => {
     e.stopPropagation();
-    const shareUrl = window.location.origin + `/property/${property._id}`;
-    if (navigator.share) {
-      // Web Share API — native sheet on mobile, ignored if it throws
-      try {
-        await navigator.share({
-          title: property.title,
-          text:  property.description?.slice(0, 120),
-          url:   shareUrl,
-        });
-      } catch {
-        // User cancelled or API not available — fall through to clipboard
-        await copy(shareUrl);
-      }
-    } else {
-      // Desktop fallback: copy link with visual feedback via useClipboard
-      await copy(shareUrl);
-    }
+    const shareUrl = `${window.location.origin}/property/${property._id}`;
+    // useShare tries Web Share API first (native sheet on mobile),
+    // then falls back to clipboard copy on desktop
+    share({
+      title: property.title || 'Property on Basha Lagbe',
+      text:  property.description?.slice(0, 120) || '',
+      url:   shareUrl,
+    });
   };
 
   const renderRating = () => {
@@ -195,22 +186,26 @@ const PropertyCard = ({
                 <HeartIcon className="w-5 h-5 text-gray-600 hover:text-red-500" />
               )}
             </motion.button>
-            {/* Share button — shows checkmark + 'Copied!' tooltip when isCopied */}
+            {/* Share button — Web Share API on mobile, clipboard fallback on desktop */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleShare}
-              title={isCopied ? 'Link copied!' : 'Share property'}
+              title={
+                status === 'shared' ? 'Shared!' :
+                status === 'copied' ? 'Link copied!' :
+                canShare ? 'Share via apps' : 'Copy link'
+              }
               className="relative p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
             >
-              {isCopied ? (
+              {isShared ? (
                 <CheckIcon className="w-5 h-5 text-green-500" />
               ) : (
                 <ShareIcon className="w-5 h-5 text-gray-600 hover:text-blue-500" />
               )}
-              {isCopied && (
+              {isShared && (
                 <span className="absolute right-full top-1/2 -translate-y-1/2 mr-2 whitespace-nowrap bg-gray-900 text-white text-xs px-2 py-1 rounded pointer-events-none">
-                  Copied!
+                  {status === 'shared' ? 'Shared!' : 'Copied!'}
                 </span>
               )}
             </motion.button>

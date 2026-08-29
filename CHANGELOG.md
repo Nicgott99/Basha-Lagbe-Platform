@@ -5,7 +5,51 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.18.0] - 2026-08-29
+
+### ✨ Added — Commit 1/2
+
+#### Hooks
+- **`useShare` hook** (`client/src/hooks/useShare.js`) — mobile-first sharing
+  with automatic fallback chain:
+
+  **Problem**: The `PropertyCard` share button only copied to clipboard via
+  `useClipboard`. On smartphones, native share sheets (WhatsApp, SMS, email,
+  AirDrop) are far more useful than clipboard copy — but weren't used.
+  The existing code also had a duplicate manual `navigator.share` implementation
+  inside `handleShare` that bypassed `useClipboard` entirely.
+
+  **Solution**: `useShare` provides a clean three-tier share strategy:
+
+  1. **Web Share API** (`navigator.share`) — fires native OS share sheet on
+     mobile and modern Chrome/Edge desktop. ~95% mobile support as of 2026.
+  2. **Clipboard API** (`navigator.clipboard.writeText`) — silent copy on
+     browsers that support it but not Web Share.
+  3. **Legacy `execCommand('copy')`** — last resort for very old browsers.
+
+  Returns:
+  - `share(shareData)` — call with `{ title, text, url }`
+  - `status` — `'idle' | 'shared' | 'copied' | 'error'`
+  - `isShared` — true immediately after any successful share/copy (drives UI)
+  - `canShare` — true when Web Share API is available (use to show different icon)
+  - `errorMsg` — descriptive error message if all methods fail
+
+  `AbortError` (user dismissed the native sheet) is silently swallowed — no
+  clipboard fallback triggered, status stays `idle` — matching user intent.
+
+#### Components Updated
+- **`PropertyCard.jsx`** — upgraded share button to use `useShare`:
+  - Replaced `useClipboard` import with `useShare`
+  - Removed 15-line manual `navigator.share` try/catch in `handleShare` —
+    replaced with 6-line clean hook call
+  - Tooltip now shows `"Share via apps"` when Web Share API is available,
+    `"Copy link"` on desktop — adapts to the device
+  - Feedback tooltip shows `"Shared!"` vs `"Copied!"` depending on method used
+
+---
+
 ## [2.17.0] - 2026-08-28
+
 
 ### ✨ Added
 
