@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import useShare from '../hooks/useShare';
 import useImageLazyLoad from '../hooks/useImageLazyLoad';
+import { formatRent, formatRelativeTime } from '../utils/formatters';
 import {
   HeartIcon,
   ShareIcon,
@@ -218,7 +219,8 @@ const PropertyCard = ({
         {/* Price Badge */}
         <div className="absolute bottom-4 right-4">
           <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full font-bold">
-            ৳{property.rentPrice?.toLocaleString()}/mo
+            {/* Use formatRent for consistent ৳ formatting with null guard */}
+            {formatRent(property.rentPrice)}
           </div>
         </div>
       </div>
@@ -297,7 +299,7 @@ const PropertyCard = ({
             <span className="font-medium">{property.landlord?.fullName || 'Property Owner'}</span>
             {property.createdAt && (
               <div className="text-xs text-gray-500 mt-1">
-                Listed {new Date(property.createdAt).toLocaleDateString()}
+                Listed {formatRelativeTime(property.createdAt)}
               </div>
             )}
           </div>

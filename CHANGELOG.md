@@ -55,9 +55,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Draft restored" info banner shown at top of form when `hasPersisted`
     is true — tells the user their previous work was recovered
 
+### 🎨 Client — Commit 2/2
+
+#### Utils
+- **`formatters.js`** (`client/src/utils/formatters.js`) — centralized
+  formatting utilities that replace scattered, inconsistent formatting code
+  across 10+ files:
+
+  **Problem**: Currency and date formatting had no single source of truth:
+  - `৳{val.toLocaleString()}` — no locale, no null guard → "৳undefined"
+  - `${val.toLocaleString('en-US')}` — USD symbol + US locale (wrong currency)
+  - `/mo` vs `/month` vs `/Month` — inconsistent rent period suffix
+  - `new Date(x).toLocaleDateString()` — browser locale → different output on
+    each user's device/region
+  - No `null`/`undefined` guards anywhere → renders "৳NaN" or crashes
+
+  **Exports**:
+
+  | Function | Input | Output |
+  |---|---|---|
+  | `formatCurrency(15000)` | 15000 | "৳15,000" |
+  | `formatCurrency(null)` | null | "Price on request" |
+  | `formatRent(15000)` | 15000 | "৳15,000/mo" |
+  | `formatDate('2026-08-31')` | ISO string | "Aug 31, 2026" |
+  | `formatDate(x, 'long')` | | "August 31, 2026" |
+  | `formatDate(x, 'datetime')` | | "Aug 31, 2026, 2:40 PM" |
+  | `formatRelativeTime(date)` | 1h ago | "1 hour ago" |
+  | `formatRelativeTime(date)` | 3d ago | "3 days ago" |
+  | `formatNumber(1234567)` | | "1,234,567" |
+  | `formatNumber(1200, 'compact')` | | "1.2K" |
+  | `truncate(text, 80)` | long string | "first 80 chars…" |
+  | `capitalise('hello')` | | "Hello" |
+
+  Uses `Intl.RelativeTimeFormat` and `Intl.NumberFormat` where available,
+  with manual fallbacks for older browsers.
+
+#### Components Updated
+- **`PropertyCard.jsx`** — first adopter of `formatters.js`:
+  - Price badge: `৳{val.toLocaleString()}/mo` → `formatRent(val)` (null-safe)
+  - "Listed" date: `new Date(x).toLocaleDateString()` → `formatRelativeTime(x)`,
+    now shows "2 days ago" instead of "8/29/2026" — much more scannable for users
+
 ---
 
 ## [2.19.0] - 2026-08-30
+
 
 
 ### ⚡ Performance — Commit 1/2
