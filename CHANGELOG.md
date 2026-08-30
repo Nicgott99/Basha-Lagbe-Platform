@@ -5,7 +5,60 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.20.0] - 2026-08-31
+
+### ✨ Added — Commit 1/2
+
+#### Hooks
+- **`useFormPersistence` hook** (`client/src/hooks/useFormPersistence.js`) —
+  Auto-saves multi-step form state to `sessionStorage` on every change (debounced
+  500ms) and restores it on page return, preventing data loss on refresh/crash.
+
+  **Problem**: The AddProperty multi-step form (4 steps, 15+ fields) had zero
+  persistence. If a landlord fills in 3 of 4 steps and accidentally presses F5,
+  closes the tab, or the browser crashes — all work is lost. This kills listing
+  creation completion rates, especially on mobile where crashes are more common.
+
+  **Solution**: Drop-in replacement for `useState` that transparently persists
+  to `sessionStorage`:
+
+  ```js
+  // Before
+  const [formData, setFormData] = useState(initialState);
+
+  // After — identical API, adds auto-save and restore
+  const [formData, setFormData, { clearPersisted, hasPersisted }] =
+    useFormPersistence('add-property-draft', initialState);
+  ```
+
+  **Why sessionStorage (not localStorage)**:
+  - Cleared when the tab closes — no stale drafts from days ago
+  - Isolated per tab — two tabs for different listings don't interfere
+
+  Features:
+  - `debounceMs` (default 500) — batches writes, no write on every keystroke
+  - `excludeFields` — skip fields from persistence (e.g. imageUrls to avoid
+    QuotaExceededError on base64 image data)
+  - `clearPersisted()` — call on successful submit to erase the draft
+  - `hasPersisted` — true if restored data was found on mount (show banner)
+  - `lastSaved` — Date of last save (show "Auto-saved 2s ago")
+  - Custom `serialize`/`deserialize` — for Date objects or complex structures
+  - `enabled=false` — disables persistence entirely (for testing)
+  - Gracefully handles `QuotaExceededError` (storage full) without crashing
+
+#### Pages Updated
+- **`AddProperty.jsx`** — integrated `useFormPersistence`:
+  - Replaced `useState` for `formData` with `useFormPersistence`
+  - `imageUrls` excluded from persistence (avoids QuotaExceededError on
+    large base64-encoded image data)
+  - `clearPersisted()` called on successful submit (erases draft)
+  - "Draft restored" info banner shown at top of form when `hasPersisted`
+    is true — tells the user their previous work was recovered
+
+---
+
 ## [2.19.0] - 2026-08-30
+
 
 ### ⚡ Performance — Commit 1/2
 

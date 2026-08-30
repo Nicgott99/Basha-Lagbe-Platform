@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import useFormPersistence from '../hooks/useFormPersistence';
 import {
   HomeIcon,
   MapPinIcon,
@@ -21,34 +22,41 @@ const AddProperty = () => {
   const [success, setSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: {
-      district: "",
-      area: "",
-      address: ""
+  // useFormPersistence auto-saves to sessionStorage on every change (debounced 500ms)
+  // and restores the draft if the user refreshes or returns to the page.
+  // imageUrls excluded from persistence (large base64 data would exceed storage quota).
+  const [formData, setFormData, { clearPersisted, hasPersisted }] = useFormPersistence(
+    'add-property-draft',
+    {
+      title: "",
+      description: "",
+      location: {
+        district: "",
+        area: "",
+        address: ""
+      },
+      propertyType: "",
+      rentPrice: "",
+      bedrooms: 1,
+      bathrooms: 1,
+      squareFeet: "",
+      floor: "",
+      totalFloors: "",
+      amenities: [],
+      furnished: false,
+      parking: false,
+      elevator: false,
+      generator: false,
+      security: false,
+      gas: false,
+      wifi: false,
+      imageUrls: [],
+      availableFrom: "",
+      contactPhone: "",
+      additionalInfo: ""
     },
-    propertyType: "",
-    rentPrice: "",
-    bedrooms: 1,
-    bathrooms: 1,
-    squareFeet: "",
-    floor: "",
-    totalFloors: "",
-    amenities: [],
-    furnished: false,
-    parking: false,
-    elevator: false,
-    generator: false,
-    security: false,
-    gas: false,
-    wifi: false,
-    imageUrls: [],
-    availableFrom: "",
-    contactPhone: "",
-    additionalInfo: ""
-  });
+    { excludeFields: ['imageUrls'] } // skip large image data to avoid QuotaExceededError
+  );
 
   const districts = [
     'Dhaka', 'Chittagong', 'Sylhet', 'Rajshahi', 'Khulna', 'Barisal', 'Rangpur', 'Mymensingh'
@@ -145,6 +153,8 @@ const AddProperty = () => {
 
       if (response.ok) {
         setSuccess(true);
+        // Clear the persisted draft on successful submission
+        clearPersisted();
         setTimeout(() => {
           navigate('/dashboard');
         }, 2000);
@@ -223,6 +233,19 @@ const AddProperty = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">List Your Property</h1>
           <p className="text-gray-600">Fill in the details to list your property for rent</p>
+        </div>
+
+        {/* Draft Restored Banner — shown when previous session data was found */}
+        {hasPersisted && (
+          <div className="mb-6 flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-4 py-3 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+            </svg>
+            <span>
+              <strong>Draft restored.</strong> Your previous listing draft has been recovered. Continue where you left off.
+            </span>
+          </div>
+        )}
         </div>
 
         {/* Progress Steps */}
