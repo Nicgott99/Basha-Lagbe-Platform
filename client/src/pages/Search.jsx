@@ -9,6 +9,7 @@ import useToggle from '../hooks/useToggle';
 import EmptyState from '../components/EmptyState';
 import usePageTitle from '../hooks/usePageTitle';
 import useGeolocation from '../hooks/useGeolocation';
+import useNetworkAwareLoading from '../hooks/useNetworkAwareLoading';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -52,6 +53,10 @@ const Search = () => {
   const [viewMode, setViewMode] = useLocalStorage('search-view-mode', 'grid');
   const [sortBy, setSortBy] = useLocalStorage('search-sort-by', 'relevance');
   const [savedProperties, setSavedProperties] = useState(new Set());
+
+  // Network-aware loading: adapts page size and shows slow connection banner
+  // based on the user's actual connection quality (important for Bangladesh mobile users)
+  const { showSlowBanner, pageSize, shouldReduceMotion, effectiveType } = useNetworkAwareLoading();
 
   // Debounce the search query — filter only fires 400ms after the user stops typing
   // This prevents unnecessary re-renders on every single keystroke
@@ -618,6 +623,18 @@ const Search = () => {
       {/* Results */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Results Header */}
+        {/* Slow connection banner — shown on 2G/slow-3G (common on Bangladeshi mobile networks) */}
+        {showSlowBanner && (
+          <div className="mb-4 flex items-center gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-3 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 flex-shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+            </svg>
+            <span>
+              <strong>Slow connection detected ({effectiveType?.toUpperCase()}).</strong> Showing fewer results to save data.
+              Showing {pageSize} per page.
+            </span>
+          </div>
+        )}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">

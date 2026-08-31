@@ -5,7 +5,49 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.21.0] - 2026-09-01
+
+### 📶 UX — Commit 1/2
+
+#### Hooks
+- **`useNetworkAwareLoading` hook** (`client/src/hooks/useNetworkAwareLoading.js`) —
+  Derives actionable loading strategy decisions from the user's network condition.
+  Builds on the existing `useNetworkSpeed` and `useOnlineStatus` hooks (already
+  in the codebase) to give components a single declarative object.
+
+  **Problem**: `useNetworkSpeed` returned raw data (effectiveType, downlink, rtt)
+  but components still had to independently decide what to do with it. Nothing in
+  the app actually *used* the network speed data despite the hook existing.
+  Meanwhile, full-resolution property images (600KB+) load on 2G (~100kbps)
+  connections and take 48+ seconds — a major issue for Bangladesh mobile users
+  on Grameenphone/Robi/Banglalink 2G/3G networks.
+
+  **Solution**: A single hook that translates raw connection data into decisions:
+
+  | Property | Fast (4G) | Medium (3G) | Slow (2G/saveData) | Offline |
+  |---|---|---|---|---|
+  | `quality` | `'fast'` | `'medium'` | `'slow'` | `'offline'` |
+  | `shouldLazyLoad` | false | true | true | false |
+  | `shouldReduceMotion` | false | false | true | true |
+  | `shouldUseLowRes` | false | false | true | true |
+  | `pageSize` | 12 | 8 | 4 | 0 |
+  | `showSlowBanner` | false | false | true | false |
+
+  Also respects `prefers-reduced-motion` OS setting for accessibility.
+  Uses `useMemo` — only recomputes when network state actually changes.
+
+#### Pages Updated
+- **`Search.jsx`** — integrated `useNetworkAwareLoading`:
+  - Added slow connection amber banner above results grid, visible on 2G/slow-3G,
+    showing `effectiveType` and `pageSize` so users understand why fewer results
+    appear: *"Slow connection detected (2G). Showing 4 per page."*
+  - `pageSize` from the hook is now available for future pagination integration.
+  - `shouldReduceMotion` extracted for animation gating.
+
+---
+
 ## [2.20.0] - 2026-08-31
+
 
 ### ✨ Added — Commit 1/2
 
