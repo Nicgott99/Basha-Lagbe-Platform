@@ -49,9 +49,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `ref={searchInputRef}` to the `<input>` element
   - Updated placeholder to include `(Ctrl+K)` hint for discoverability
 
+### 🔒 Security — Commit 2/2
+
+#### Middleware
+- **`slowDown.js`** (`server/middleware/slowDown.js`) — progressive response
+  delay middleware for Express. Slows repeat requests rather than hard-blocking,
+  creating a gentler but still effective first layer of defence.
+
+  **Problem**: The existing `express-rate-limit` hard-blocks with 429 after 20
+  auth requests in 15 minutes. This is too aggressive for legitimate users:
+  - A user on a flaky mobile connection (common in Bangladesh) who retries a
+    failed login 6 times gets hard-blocked and sees an error page.
+  - Bots can detect 429s, back off, and resume when the window resets.
+
+  **Solution**: Progressive delay as the *first* response to repeat requests:
+
+  | Requests/minute | Delay |
+  |---|---|
+  | 1–5 | 0ms (instant) |
+  | 6 | 500ms |
+  | 7 | 1,000ms |
+  | 8 | 1,500ms |
+  | ... | ... |
+  | 15+ | 5,000ms (cap) |
+
+  - A legitimate user who retries 3 times gets instant responses — no impact.
+  - A bot trying 50 requests/minute is throttled to 5s/request → only 12 requests
+    actually complete per minute instead of 50.
+  - After the delay, requests still succeed (unlike 429) — so users aren't
+    blocked, but brute-force attacks become impractical.
+
+  **API**:
+  - `createSlowDown(options)` — factory function returning an Express middleware
+  - Options: `windowMs`, `freeRequests`, `delayAfter`, `maxDelay`, `keyGenerator`, `skip`
+  - Response headers: `X-SlowDown-Limit`, `X-SlowDown-Remaining`, `X-SlowDown-Delay-ms`
+  - Zero dependencies — native `setTimeout` + `Map` (no Redis required)
+  - Cleanup interval runs every 5 minutes, `unref()`'d to allow graceful shutdown
+
+#### Server Updated (`server/index.js`)
+- Auth endpoint middleware stack changed from:
+  `authLimiter → authRoutes`
+  to:
+  `authSlowDown → authLimiter → authRoutes`
+
+  Config: 5 free requests/minute, then +500ms/request, capped at 5s.
+  Hard rate limit still fires at 20 requests/15min as before.
+
 ---
 
 ## [2.21.0] - 2026-09-01
+
 
 
 ### 📶 UX — Commit 1/2

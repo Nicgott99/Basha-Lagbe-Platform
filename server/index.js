@@ -15,6 +15,7 @@ import corsOptions from './middleware/corsOptions.js';
 import validateEnv from './utils/validateEnv.js';
 import globalErrorHandler from './middleware/globalErrorHandler.js';
 import requestId from './middleware/requestId.js';
+import createSlowDown from './middleware/slowDown.js';
 import authRoutes from './routes/auth.route.js';
 import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
@@ -62,6 +63,17 @@ const generalLimiter = rateLimit({
     statusCode: 429,
     message: 'Too many requests from this IP. Please try again later.'
   }
+});
+
+// Progressive slow-down for auth endpoints — adds delay BEFORE the hard rate limit.
+// Slows bots/credential-stuffers without immediately hard-blocking legitimate users
+// who retry after a failed login (common on flaky mobile connections in Bangladesh).
+// First 5 requests/minute: instant. Each additional: +500ms delay, capped at 5s.
+const authSlowDown = createSlowDown({
+  windowMs:     60 * 1000,  // 1-minute window
+  freeRequests: 5,          // 5 free requests before delay starts
+  delayAfter:   500,        // +500ms per request over the free limit
+  maxDelay:     5_000,      // cap at 5 seconds
 });
 
 // Apply general limiter to all /server/* routes
@@ -131,8 +143,10 @@ app.get('/server/test', (req, res) => {
 // GET /server/health/detail — full readiness probe (DB + memory + system)
 app.use('/server/health', healthRoutes);
 
-// API Routes — auth gets the strict limiter to block brute-force attacks
-app.use('/server/auth', authLimiter, authRoutes);
+// API Routes — auth gets: (1) progressive slow-down, (2) hard rate limit
+// Layered defence: slow-down first catches repeated retries gracefully,
+// hard limit blocks clear abuse.
+app.use('/server/auth', authSlowDown, authLimiter, authRoutes);
 // Authenticated routes get per-user rate limiting (60 req/min) in addition
 // to the shared IP-based general limiter applied above.
 // This prevents one user from exhausting limits for an entire shared network.
