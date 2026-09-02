@@ -5,7 +5,54 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.22.0] - 2026-09-02
+
+### ⌨️ Accessibility & UX — Commit 1/2
+
+#### Hooks
+- **`useKeyboardShortcuts` hook** (`client/src/hooks/useKeyboardShortcuts.js`) —
+  Registers multiple keyboard shortcuts from a single declarative map, using
+  one shared `keydown` event listener for all shortcuts (O(1) key lookup).
+
+  **Problem**: `useKeyPress` handles one shortcut per call. Pages that need
+  5+ shortcuts (Search: focus, filters, escape; AdminPanel: approve, reject,
+  select-all) would need 5 separate `useKeyPress` calls, creating 5 separate
+  `keydown` event listeners — wasteful and verbose.
+
+  **Solution**: A single hook that registers all shortcuts via one listener:
+  ```js
+  useKeyboardShortcuts({
+    focusSearch:   { key: 'k', ctrl: true, handler: focusInput },
+    toggleFilters: { key: 'f', ctrl: true, handler: toggleFilters },
+    closeOrClear:  { key: 'Escape', handler: handleEscape, ignoreInputs: false },
+  });
+  ```
+
+  Features:
+  - `ctrl`/`shift`/`alt` modifier combinations (Ctrl=Cmd on Mac)
+  - `ignoreInputs: true` (default) — skips shortcut when user is typing
+    in an `<input>`, `<textarea>`, or `contenteditable`
+  - `ignoreInputs: false` — for shortcuts that should fire even during typing
+    (e.g. Escape to close a modal while typing in it)
+  - `preventDefault: true` (default) — prevents browser default behaviour
+    (Ctrl+K opening URL bar, Ctrl+S showing save dialog)
+  - `enabled` — per-shortcut toggle (disable individual shortcuts conditionally)
+  - Global `enabled` option — disables ALL shortcuts (e.g. when modal is open)
+  - Uses `useRef` for the shortcuts map — avoids re-creating the event listener
+    on every render while still having access to latest handler closures
+
+#### Pages Updated
+- **`Search.jsx`** — integrated `useKeyboardShortcuts`:
+  - `Ctrl+K` → focuses the search input (industry-standard: GitHub, Linear, Notion)
+  - `Ctrl+F` → toggles the filter panel open/closed
+  - `Escape` → closes filter panel (if open), or clears search query (if typing)
+  - Added `ref={searchInputRef}` to the `<input>` element
+  - Updated placeholder to include `(Ctrl+K)` hint for discoverability
+
+---
+
 ## [2.21.0] - 2026-09-01
+
 
 ### 📶 UX — Commit 1/2
 

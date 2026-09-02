@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import EmptyState from '../components/EmptyState';
 import usePageTitle from '../hooks/usePageTitle';
 import useGeolocation from '../hooks/useGeolocation';
 import useNetworkAwareLoading from '../hooks/useNetworkAwareLoading';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
@@ -57,6 +58,39 @@ const Search = () => {
   // Network-aware loading: adapts page size and shows slow connection banner
   // based on the user's actual connection quality (important for Bangladesh mobile users)
   const { showSlowBanner, pageSize, shouldReduceMotion, effectiveType } = useNetworkAwareLoading();
+
+  // Ref to the search input — used by keyboard shortcuts to focus it
+  const searchInputRef = useRef(null);
+
+  // Keyboard shortcuts for power users:
+  //   Ctrl+K — focus the search input (standard UX pattern, e.g. GitHub, Linear)
+  //   Ctrl+F — toggle the filter panel open/closed
+  //   Escape — clear the search query or close filters (whichever is active)
+  useKeyboardShortcuts({
+    focusSearch: {
+      key: 'k',
+      ctrl: true,
+      handler: () => searchInputRef.current?.focus(),
+      ignoreInputs: false, // works even when another input has focus
+    },
+    toggleFilters: {
+      key: 'f',
+      ctrl: true,
+      handler: toggleFilters,
+    },
+    clearOrClose: {
+      key: 'Escape',
+      handler: () => {
+        if (showFilters) {
+          toggleFilters();
+        } else if (searchQuery) {
+          setSearchQuery('');
+        }
+      },
+      ignoreInputs: false,  // Escape works even while typing
+      preventDefault: false, // don't suppress browser Escape handling
+    },
+  });
 
   // Debounce the search query — filter only fires 400ms after the user stops typing
   // This prevents unnecessary re-renders on every single keystroke
@@ -437,8 +471,9 @@ const Search = () => {
               <div className="flex-1 relative">
                 <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
+                  ref={searchInputRef}
                   type="text"
-                  placeholder="Search for properties, locations, or keywords..."
+                  placeholder="Search for properties, locations, or keywords... (Ctrl+K)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
