@@ -7,6 +7,7 @@ import { randomBytes } from "crypto";
 import { sendVerificationEmail, generateVerificationCode, sendPasswordResetEmail, sendPasswordChangeConfirmationEmail } from "../utils/emailService.js";
 import { displayVerificationCode, displayAdminLogin, displayUserSignup, displaySuccess, displayError } from "../utils/terminalLogger.js";
 import crypto from "crypto";
+import { signToken, setTokenCookie } from "../utils/jwtUtils.js";
 
 // Send Verification Code
 export const sendVerificationCode = async (req, res, next) => {
@@ -260,27 +261,15 @@ export const completeSignup = async (req, res, next) => {
 
     await newUser.save();
 
-    // Generate JWT token for immediate login
-    const token = jwt.sign(
-      { 
-        id: newUser._id, 
-        email: newUser.email, 
-        role: newUser.role 
-      }, 
-      process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-      { expiresIn: '7d' }
-    );
+    // Generate JWT token — uses signToken from jwtUtils (no hardcoded fallback secret)
+    const token = signToken({ id: newUser._id, email: newUser.email, role: newUser.role });
 
     // Remove password from response
     const { password: pass, ...userWithoutPassword } = newUser._doc;
 
+    // setTokenCookie centralizes httpOnly/secure/sameSite/maxAge config
+    setTokenCookie(res, token);
     res
-      .cookie("access_token", token, { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      })
       .status(201)
       .json({
         success: true,
@@ -366,27 +355,15 @@ export const signin = async (req, res, next) => {
       return next(errorHandler(401, "Invalid credentials"));
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        id: user._id, 
-        email: user.email, 
-        role: user.role 
-      }, 
-      process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-      { expiresIn: '7d' }
-    );
+    // Generate JWT token — uses signToken from jwtUtils (no hardcoded fallback secret)
+    const token = signToken({ id: user._id, email: user.email, role: user.role });
 
     // Remove password from response
     const { password: pass, ...userWithoutPassword } = user._doc;
 
+    // setTokenCookie centralizes httpOnly/secure/sameSite/maxAge config
+    setTokenCookie(res, token);
     res
-      .cookie("access_token", token, { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      })
       .status(200)
       .json({
         success: true,

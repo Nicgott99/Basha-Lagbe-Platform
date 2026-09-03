@@ -5,7 +5,51 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.23.0] - 2026-09-03
+
+### 🔐 Security — Commit 1/2
+
+#### Utils
+- **`jwtUtils.js`** (`server/utils/jwtUtils.js`) — centralized JWT helper
+  functions. Previously an empty placeholder file (0 bytes).
+
+  **Critical problem fixed**: `jwt.sign()` was called in 6+ controller functions
+  with a hardcoded fallback secret:
+  ```js
+  // BEFORE (in auth.controller.js) — INSECURE
+  jwt.sign(payload,
+    process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
+    { expiresIn: '7d' }
+  );
+  ```
+  If `JWT_SECRET` is undefined (e.g. missing `.env` file in a new deployment),
+  the app silently falls back to this known, source-code-visible string.
+  Anyone who reads the GitHub repo can forge tokens for any user, including admins.
+
+  **Solution**: `jwtUtils.js` provides:
+  - `signToken(payload, options)` — signs a JWT with **no fallback**; throws if
+    `JWT_SECRET` is missing (already guaranteed by `validateEnv` at startup)
+  - `verifyJwt(token)` — promise-based verify (no callback API)
+  - `decodeJwt(token)` — decode without verification (for logging only)
+  - `setTokenCookie(res, token)` — sets `access_token` cookie with consistent
+    `httpOnly`, `secure`, `sameSite: strict`, `maxAge: 7d` config
+  - `clearTokenCookie(res)` — clears the cookie on sign-out
+  - `TOKEN_TTL = '7d'` / `TOKEN_TTL_MS` — shared expiry constants so token
+    lifetime and cookie `maxAge` can never get out of sync
+
+#### Controllers Updated
+- **`auth.controller.js`** — first adoption of `jwtUtils`:
+  - Added `import { signToken, setTokenCookie } from '../utils/jwtUtils.js'`
+  - `completeSignup`: replaced `jwt.sign(...hardcodedFallback...)` + manual
+    `.cookie(...)` chain → `signToken(...)` + `setTokenCookie(res, token)`
+  - `signin`: same replacement for the sign-in path
+  - Both paths now fail fast if `JWT_SECRET` is missing rather than silently
+    using an insecure fallback
+
+---
+
 ## [2.22.0] - 2026-09-02
+
 
 ### ⌨️ Accessibility & UX — Commit 1/2
 
