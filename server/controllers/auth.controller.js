@@ -2,12 +2,11 @@ import User from "../models/user.model.js";
 import EmailVerification from "../models/emailVerification.model.js";
 import bcryptjs from "bcryptjs";
 import { errorHandler } from "../utils/error.js";
-import jwt from "jsonwebtoken";
 import { randomBytes } from "crypto";
 import { sendVerificationEmail, generateVerificationCode, sendPasswordResetEmail, sendPasswordChangeConfirmationEmail } from "../utils/emailService.js";
 import { displayVerificationCode, displayAdminLogin, displayUserSignup, displaySuccess, displayError } from "../utils/terminalLogger.js";
 import crypto from "crypto";
-import { signToken, setTokenCookie } from "../utils/jwtUtils.js";
+import { signToken, verifyJwt, setTokenCookie, clearTokenCookie } from "../utils/jwtUtils.js";
 
 // Send Verification Code
 export const sendVerificationCode = async (req, res, next) => {
@@ -433,33 +432,22 @@ export const completeSignin = async (req, res, next) => {
     await verification.save();
 
     // Generate JWT token
-    const token = jwt.sign(
-      { 
-        id: user._id, 
-        email: user.email, 
-        role: user.role 
-      }, 
-      process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-      { expiresIn: '7d' }
-    );
+    const token = signToken({ 
+      id: user._id, 
+      email: user.email, 
+      role: user.role 
+    });
 
     // Remove password from response
     const { password: pass, ...userWithoutPassword } = user._doc;
 
-    res
-      .cookie("access_token", token, { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: "Signed in successfully",
-        user: userWithoutPassword,
-        token
-      });
+    setTokenCookie(res, token);
+    res.status(200).json({
+      success: true,
+      message: "Signed in successfully",
+      user: userWithoutPassword,
+      token
+    });
   } catch (error) {
     console.error("Complete signin error:", error);
     next(error);
@@ -560,32 +548,21 @@ export const google = async (req, res, next) => {
 
     if (user) {
       // User exists, log them in
-      const token = jwt.sign(
-        { 
-          id: user._id, 
-          email: user.email, 
-          role: user.role 
-        }, 
-        process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-        { expiresIn: '7d' }
-      );
+      const token = signToken({ 
+        id: user._id, 
+        email: user.email, 
+        role: user.role 
+      });
 
       const { password, ...userWithoutPassword } = user._doc;
 
-      res
-        .cookie("access_token", token, { 
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        })
-        .status(200)
-        .json({
-          success: true,
-          message: "Signed in with Google successfully",
-          user: userWithoutPassword,
-          token
-        });
+      setTokenCookie(res, token);
+      res.status(200).json({
+        success: true,
+        message: "Signed in with Google successfully",
+        user: userWithoutPassword,
+        token
+      });
     } else {
       // Create new user
       // Generate a cryptographically secure random password for OAuth users.
@@ -604,30 +581,20 @@ export const google = async (req, res, next) => {
 
       await newUser.save();
 
-      const token = jwt.sign(
-        { 
+      const token = signToken({ 
         id: newUser._id, 
         email: newUser.email, 
         role: newUser.role 
-      }, 
-      process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-      { expiresIn: '7d' }
-    );
+      });
 
-    const { password, ...userWithoutPassword } = newUser._doc;      res
-        .cookie("access_token", token, { 
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        })
-        .status(200)
-        .json({
-          success: true,
-          message: "Signed in with Google successfully",
-          user: userWithoutPassword,
-          token
-        });
+      const { password, ...userWithoutPassword } = newUser._doc;
+      setTokenCookie(res, token);
+      res.status(200).json({
+        success: true,
+        message: "Signed in with Google successfully",
+        user: userWithoutPassword,
+        token
+      });
     }
   } catch (error) {
     console.error("Google OAuth error:", error);
@@ -649,32 +616,21 @@ export const github = async (req, res, next) => {
 
     if (user) {
       // User exists, log them in
-      const token = jwt.sign(
-        { 
-          id: user._id, 
-          email: user.email, 
-          role: user.role 
-        }, 
-        process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-        { expiresIn: '7d' }
-      );
+      const token = signToken({ 
+        id: user._id, 
+        email: user.email, 
+        role: user.role 
+      });
 
       const { password, ...userWithoutPassword } = user._doc;
 
-      res
-        .cookie("access_token", token, { 
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        })
-        .status(200)
-        .json({
-          success: true,
-          message: "Signed in with GitHub successfully",
-          user: userWithoutPassword,
-          token
-        });
+      setTokenCookie(res, token);
+      res.status(200).json({
+        success: true,
+        message: "Signed in with GitHub successfully",
+        user: userWithoutPassword,
+        token
+      });
     } else {
       // Create new user
       // Generate a cryptographically secure random password for OAuth users.
@@ -694,32 +650,21 @@ export const github = async (req, res, next) => {
 
       await newUser.save();
 
-      const token = jwt.sign(
-        { 
-          id: newUser._id, 
-          email: newUser.email, 
-          role: newUser.role 
-        }, 
-        process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369',
-        { expiresIn: '7d' }
-      );
+      const token = signToken({ 
+        id: newUser._id, 
+        email: newUser.email, 
+        role: newUser.role 
+      });
 
       const { password, ...userWithoutPassword } = newUser._doc;
       
-      res
-        .cookie("access_token", token, { 
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        })
-        .status(201)
-        .json({
-          success: true,
-          message: "Account created and signed in with GitHub successfully",
-          user: userWithoutPassword,
-          token
-        });
+      setTokenCookie(res, token);
+      res.status(201).json({
+        success: true,
+        message: "Account created and signed in with GitHub successfully",
+        user: userWithoutPassword,
+        token
+      });
     }
   } catch (error) {
     console.error("GitHub OAuth error:", error);
@@ -772,7 +717,7 @@ export const checkUser = async (req, res, next) => {
 // Sign Out
 export const signOut = (req, res) => {
   try {
-    res.clearCookie("access_token");
+    clearTokenCookie(res);
     
     res.status(200).json({
       success: true,
@@ -796,7 +741,7 @@ export const verifyToken = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Not authenticated' });
     }
     
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'BashaLagbe2025SuperSecretKeyAdvancedSecurityProductionReady147258369');
+    const decoded = await verifyJwt(token);
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {
@@ -813,4 +758,4 @@ export const verifyToken = async (req, res) => {
     }
     return res.status(403).json({ success: false, message: 'Invalid token' });
   }
-}
+};

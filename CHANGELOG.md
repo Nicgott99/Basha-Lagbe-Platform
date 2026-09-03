@@ -5,6 +5,25 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.24.0] - 2026-09-04
+
+### 🔐 Security & Architecture
+
+#### Complete JWT Centralization & Fallback Secret Eradication
+- **`auth.controller.js`** (`server/controllers/auth.controller.js`):
+  - Completely removed all remaining direct calls to `jwt.sign()`, `jwt.verify()`, and manual cookie setting/clearing.
+  - Migrated `completeSignin`, `google` (login & register), and `github` (login & register) to `signToken()` and `setTokenCookie()`.
+  - Migrated `signOut` to standardized `clearTokenCookie(res)`.
+  - Migrated `verifyToken` auth status endpoint to async `verifyJwt(token)`.
+  - Removed direct `jsonwebtoken` dependency from `auth.controller.js`.
+  - **100% elimination of hardcoded fallback secrets**: completely erased all occurrences of the insecure fallback secret across all OAuth and sign-in handlers.
+- **`verifyUser.js`** (`server/utils/verifyUser.js`):
+  - Refactored `verifyToken` middleware to verify tokens via `verifyJwt(token)` from `jwtUtils.js`.
+  - Removed duplicate local `JWT_SECRET` extraction and direct `jsonwebtoken` dependency.
+  - All token verification and generation in the application is now unified under `jwtUtils.js`.
+
+---
+
 ## [2.23.0] - 2026-09-03
 
 ### 🔐 Security — Commit 1/2
