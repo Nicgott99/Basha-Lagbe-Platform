@@ -46,9 +46,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Both paths now fail fast if `JWT_SECRET` is missing rather than silently
     using an insecure fallback
 
+### 🎨 UX — Commit 2/2
+
+#### Components
+- **`SkeletonCard`** — the component already existed but was not being used.
+  Two pages had their own ad-hoc inline loading placeholders instead:
+
+  **`Search.jsx`** (before):
+  ```jsx
+  {[...Array(6)].map((_, index) => (
+    <div key={index} className="bg-white rounded-xl animate-pulse">
+      <div className="h-64 bg-gray-300"></div>
+      <div className="p-6">
+        <div className="h-6 bg-gray-300 rounded mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      </div>
+    </div>
+  ))}
+  ```
+
+  **`Home.jsx`** (before):
+  ```jsx
+  <div className="flex justify-center items-center py-16">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+  ```
+
+  **Problems with the above**:
+  - `SkeletonCard` has a proper multi-gradient shimmer animation (`animate-shimmer`)
+    that is significantly more polished than `animate-pulse` (flat grey)
+  - The inline skeleton in Search used hardcoded `Array(6)` — it ignored the
+    `pageSize` value from `useNetworkAwareLoading` (added in v2.21.0)
+  - The spinner in Home gave no layout preview — users didn't know if 2 or 20
+    cards were coming, causing a jarring layout shift on load
+  - Code was duplicated instead of using the existing purpose-built component
+
+#### Pages Updated
+- **`Search.jsx`**:
+  - Removed 14-line inline animate-pulse skeleton
+  - Replaced with `<SkeletonCard count={pageSize || 6} variant="default" />`
+  - `count` now uses `pageSize` from `useNetworkAwareLoading` — on slow
+    connections (2G), shows 4 skeletons instead of 6 (matching reduced data)
+  - Added `import SkeletonCard from '../components/SkeletonCard'`
+
+- **`Home.jsx`**:
+  - Removed the generic blue spinner
+  - Replaced with a 3-card `<SkeletonCard count={3} variant="default" />` grid
+    matching the featured properties layout — no more layout shift on load
+  - Added `import SkeletonCard from '../components/SkeletonCard'`
+
 ---
 
 ## [2.22.0] - 2026-09-02
+
 
 
 ### ⌨️ Accessibility & UX — Commit 1/2

@@ -23,6 +23,7 @@ import {
 import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import FadeInSection from '../components/FadeInSection';
 import usePageTitle from '../hooks/usePageTitle';
+import SkeletonCard from '../components/SkeletonCard';
 
 const Home = () => {
   usePageTitle('Find Rental Properties in Bangladesh');
@@ -464,8 +465,11 @@ const Home = () => {
           </FadeInSection>
           
           {loading && (
-            <div className="flex justify-center items-center py-16">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            // SkeletonCard: shows a meaningful 3-card shimmer grid while featured
+            // properties load — much better UX than a generic spinner that gives
+            // no indication of how many or what type of items are coming
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              <SkeletonCard count={3} variant="default" />
             </div>
           )}
 
