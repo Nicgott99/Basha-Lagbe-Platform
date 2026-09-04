@@ -21,6 +21,14 @@ import userRoutes from './routes/user.route.js';
 import listingRoutes from './routes/listing.route.js';
 import reviewRoutes from './routes/review.route.js';
 import healthRoutes from './routes/health.route.js';
+import adminRoutes from './routes/admin.route.js';
+import applicationRoutes from './routes/applicationRoutes.js';
+import inquiryRoutes from './routes/inquiryRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import statsRoutes from './routes/statsRoutes.js';
+import favoriteRoutes from './routes/favoriteRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
+import notFoundHandler from './middleware/notFoundHandler.js';
 
 dotenv.config();
 // Validate all required environment variables before doing anything else.
@@ -154,22 +162,19 @@ app.use('/server/user',    rateLimitByUser({ max: 60 }),  userRoutes);
 app.use('/server/listing', rateLimitByUser({ max: 60 }),  listingRoutes);
 app.use('/server/review',  rateLimitByUser({ max: 30 }),  reviewRoutes);
 
-// Import and use additional routes
-import adminRoutes from './routes/admin.route.js';
-import applicationRoutes from './routes/applicationRoutes.js';
-import inquiryRoutes from './routes/inquiryRoutes.js';
-import notificationRoutes from './routes/notificationRoutes.js';
-import statsRoutes from './routes/statsRoutes.js';
-import favoriteRoutes from './routes/favoriteRoutes.js';
-import messageRoutes from './routes/messageRoutes.js';
+app.use('/server/admin',         rateLimitByUser({ max: 100 }), adminRoutes);
+app.use('/server/applications',  rateLimitByUser({ max: 60 }),  applicationRoutes);
+app.use('/server/inquiries',     rateLimitByUser({ max: 60 }),  inquiryRoutes);
+app.use('/server/notifications', rateLimitByUser({ max: 60 }),  notificationRoutes);
+app.use('/server/stats',         statsRoutes);
+app.use('/server/favorites',     rateLimitByUser({ max: 60 }),  favoriteRoutes);
+app.use('/server/messages',      rateLimitByUser({ max: 60 }),  messageRoutes);
 
-app.use('/server/admin', adminRoutes);
-app.use('/server/applications', applicationRoutes);
-app.use('/server/inquiries', inquiryRoutes);
-app.use('/server/notifications', notificationRoutes);
-app.use('/server/stats', statsRoutes);
-app.use('/server/favorites', favoriteRoutes);
-app.use('/server/messages', messageRoutes);
+// ─── API 404 Interceptor ───────────────────────────────────────────────────
+// Catches all unmatched /server/* requests across any HTTP method.
+// Must come before SPA static file serving so unhandled API requests return
+// a structured JSON 404 instead of returning index.html (which breaks JSON parsers).
+app.all('/server/*', notFoundHandler);
 
 // Serve static files for production
 app.use(express.static(path.join(__dirname, '/client/dist')));

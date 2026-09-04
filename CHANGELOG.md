@@ -5,6 +5,22 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.25.0] - 2026-09-05
+
+### 🛡️ Architecture & Security
+
+#### API 404 Interceptor & Router Architecture Hardening
+- **`notFoundHandler.js`** (`server/middleware/notFoundHandler.js`):
+  - Created standardized API 404 middleware for unhandled `/server/*` endpoints.
+  - Prevents single-page application wildcard routing (`app.get('*')`) from returning `index.html` (HTTP 200 HTML) when clients request non-existent API routes.
+  - Returns a structured, parseable JSON error with HTTP status 404, request ID, method, and requested path.
+- **`server/index.js`**:
+  - Restructured module imports: centralized all route definitions at the top of the file following ES module best practices.
+  - Extended user-level rate limiting (`rateLimitByUser`) across all remaining authenticated feature routes (`admin`, `applications`, `inquiries`, `notifications`, `favorites`, `messages`).
+  - Mounted `app.all('/server/*', notFoundHandler)` immediately after route registration, intercepting any invalid API requests across all HTTP verbs before the static SPA handler.
+
+---
+
 ## [2.24.0] - 2026-09-04
 
 ### 🔐 Security & Architecture
