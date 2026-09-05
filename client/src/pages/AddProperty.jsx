@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import useFormPersistence from '../hooks/useFormPersistence';
+import usePageTitle from '../hooks/usePageTitle';
 import {
   HomeIcon,
   MapPinIcon,
@@ -15,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const AddProperty = () => {
+  usePageTitle('List New Property');
   const { currentUser } = useSelector(state => state.user);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -246,7 +248,6 @@ const AddProperty = () => {
             </span>
           </div>
         )}
-        </div>
 
         {/* Progress Steps */}
         <div className="mb-8">

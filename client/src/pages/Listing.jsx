@@ -9,6 +9,7 @@ import {
   FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare,
 } from "react-icons/fa";
 import useClipboard from "../hooks/useClipboard";
+import usePageTitle from "../hooks/usePageTitle";
 
 export default function Listing() {
   SwiperCore.use([Navigation]);
@@ -16,6 +17,7 @@ export default function Listing() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  usePageTitle(listing ? `${listing.name || listing.title} — Basha Lagbe` : 'Property Details', { raw: true });
   // useClipboard replaces the manual copied state + setTimeout + clipboard call
   const { isCopied, copy } = useClipboard({ resetDelay: 2000 });
   const [showContactInfo, setShowContactInfo] = useState(false);

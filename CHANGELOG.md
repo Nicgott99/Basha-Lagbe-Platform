@@ -5,6 +5,24 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.26.0] - 2026-09-06
+
+### 🎨 Frontend & UX Hardening
+
+#### JSX Syntax Fix, Sticky Header Contrast & Active Navigation Highlighting
+- **`AddProperty.jsx`** (`client/src/pages/AddProperty.jsx`):
+  - Fixed a critical JSX parsing error (`Unterminated regular expression` caused by an extraneous closing `</div>` on line 249) that previously broke `vite build`.
+  - Added `usePageTitle('List New Property')` to dynamically reflect tab state in the browser.
+- **`Header.jsx`** (`client/src/components/Header.jsx`):
+  - Fixed sticky header contrast bug: the header previously transitioned to `bg-white` while all navigation links and brand texts remained hardcoded `text-white`, causing text to become invisible when scrolling down.
+  - Upgraded sticky styling to a glassmorphic `bg-gradient-to-r from-blue-900/95 via-indigo-900/95 to-blue-950/95 backdrop-blur-md` with subtle border divider and dynamic padding compaction (`py-3` on scroll vs `py-4` at top).
+  - Integrated `useLocation` with `isActive` route tracking to provide active navigation indicators: highlighted yellow bottom-border accent for desktop links and active pill highlight for the mobile drawer.
+- **`Listing.jsx` & `About.jsx`**:
+  - Integrated `usePageTitle` into `Listing.jsx` to dynamically show the property title/name in the browser tab.
+  - Integrated `usePageTitle('About Us')` into `About.jsx`.
+
+---
+
 ## [2.25.0] - 2026-09-05
 
 ### 🛡️ Architecture & Security

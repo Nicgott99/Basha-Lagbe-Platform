@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 import { signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../redux/users/userSlice";
@@ -8,6 +8,7 @@ import useStickyHeader from "../hooks/useStickyHeader";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -18,6 +19,7 @@ export default function Header() {
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const isActive = (path) => location.pathname === path;
 
   const isAdminOrLandlord =
     currentUser?.accountType === "landlord" ||
@@ -61,11 +63,11 @@ export default function Header() {
     <header className={[
       "sticky top-0 z-50 transition-all duration-300",
       isSticky
-        ? "bg-white shadow-lg text-gray-900"
+        ? "bg-gradient-to-r from-blue-900/95 via-indigo-900/95 to-blue-950/95 backdrop-blur-md shadow-xl border-b border-white/10"
         : "bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg",
     ].join(" ")}>
       {/* ── Top Bar ───────────────────────────────────────────────── */}
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className={`flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isSticky ? 'py-3' : 'py-4'}`}>
 
         {/* Logo */}
         <Link to="/" className="flex items-center" onClick={closeMobileMenu}>
@@ -77,11 +79,47 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="text-white hover:text-yellow-400 transition duration-300 font-medium">Home</Link>
-          <Link to="/search" className="text-white hover:text-yellow-400 transition duration-300 font-medium">Search Properties</Link>
-          <Link to="/about" className="text-white hover:text-yellow-400 transition duration-300 font-medium">About</Link>
+          <Link
+            to="/"
+            className={`transition duration-300 font-medium pb-1 ${
+              isActive("/")
+                ? "text-yellow-400 font-semibold border-b-2 border-yellow-400"
+                : "text-white/90 hover:text-yellow-400"
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/search"
+            className={`transition duration-300 font-medium pb-1 ${
+              isActive("/search")
+                ? "text-yellow-400 font-semibold border-b-2 border-yellow-400"
+                : "text-white/90 hover:text-yellow-400"
+            }`}
+          >
+            Search Properties
+          </Link>
+          <Link
+            to="/about"
+            className={`transition duration-300 font-medium pb-1 ${
+              isActive("/about")
+                ? "text-yellow-400 font-semibold border-b-2 border-yellow-400"
+                : "text-white/90 hover:text-yellow-400"
+            }`}
+          >
+            About
+          </Link>
           {currentUser && isAdminOrLandlord && (
-            <Link to="/add-property" className="text-white hover:text-yellow-400 transition duration-300 font-medium">List Property</Link>
+            <Link
+              to="/add-property"
+              className={`transition duration-300 font-medium pb-1 ${
+                isActive("/add-property")
+                  ? "text-yellow-400 font-semibold border-b-2 border-yellow-400"
+                  : "text-white/90 hover:text-yellow-400"
+              }`}
+            >
+              List Property
+            </Link>
           )}
         </nav>
 
@@ -171,10 +209,40 @@ export default function Header() {
 
       {/* ── Mobile Menu Drawer ─────────────────────────────────────── */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-indigo-800 border-t border-indigo-600 px-4 pb-5 pt-2 space-y-1">
-          <Link to="/" className="block py-2 text-white hover:text-yellow-400 font-medium transition duration-200" onClick={closeMobileMenu}>Home</Link>
-          <Link to="/search" className="block py-2 text-white hover:text-yellow-400 font-medium transition duration-200" onClick={closeMobileMenu}>Search Properties</Link>
-          <Link to="/about" className="block py-2 text-white hover:text-yellow-400 font-medium transition duration-200" onClick={closeMobileMenu}>About</Link>
+        <div className="md:hidden bg-indigo-900/95 backdrop-blur-md border-t border-indigo-700/60 px-4 pb-5 pt-2 space-y-1 shadow-2xl">
+          <Link
+            to="/"
+            className={`block py-2 px-3 rounded-md font-medium transition duration-200 ${
+              isActive("/")
+                ? "bg-indigo-700/80 text-yellow-400 font-semibold"
+                : "text-white hover:text-yellow-400"
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Home
+          </Link>
+          <Link
+            to="/search"
+            className={`block py-2 px-3 rounded-md font-medium transition duration-200 ${
+              isActive("/search")
+                ? "bg-indigo-700/80 text-yellow-400 font-semibold"
+                : "text-white hover:text-yellow-400"
+            }`}
+            onClick={closeMobileMenu}
+          >
+            Search Properties
+          </Link>
+          <Link
+            to="/about"
+            className={`block py-2 px-3 rounded-md font-medium transition duration-200 ${
+              isActive("/about")
+                ? "bg-indigo-700/80 text-yellow-400 font-semibold"
+                : "text-white hover:text-yellow-400"
+            }`}
+            onClick={closeMobileMenu}
+          >
+            About
+          </Link>
 
           {currentUser ? (
             <>

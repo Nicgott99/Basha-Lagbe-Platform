@@ -13,8 +13,10 @@ import {
   PhoneIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
+import usePageTitle from '../hooks/usePageTitle';
 
 const About = () => {
+  usePageTitle('About Us');
   const team = [
     {
       name: "MD Hasib Ullah Khan Alvie",
