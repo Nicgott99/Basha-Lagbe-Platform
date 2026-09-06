@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { XMarkIcon, CogIcon } from "@heroicons/react/24/outline";
+import { onConsentGranted } from "../utils/analytics";
 
 const COOKIE_KEY = "bl_cookie_consent";
 
@@ -32,6 +33,9 @@ const CookieBanner = () => {
     localStorage.setItem(COOKIE_KEY, JSON.stringify({ ...consentPrefs, ts: Date.now() }));
     setVisible(false);
     setManaging(false);
+    if (consentPrefs.analytics) {
+      onConsentGranted();
+    }
   };
 
   const acceptAll = () => save({ necessary: true, analytics: true, marketing: true });

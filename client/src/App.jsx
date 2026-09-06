@@ -28,6 +28,7 @@ import BackToTop from "./components/BackToTop";
 import OfflineBanner from "./components/OfflineBanner";
 import ReadingProgressBar from "./components/ReadingProgressBar";
 import useCrossTabSync from "./hooks/useCrossTabSync";
+import useAnalytics from "./hooks/useAnalytics";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Accessibility from "./pages/Accessibility";
@@ -43,11 +44,17 @@ import MobileStickyCTA from "./components/MobileStickyCTA";
 function AppRoutes() {
   const { currentUser } = useSelector((state) => state.user);
 
-  // Sync auth state across browser tabs — signs out all tabs when one signs out
+  // Sync auth state across browser tabs
   useCrossTabSync();
+  // Track page views on every route change (consent-gated)
+  useAnalytics();
 
   return (
     <>
+      {/* Skip to content — keyboard / screen reader accessibility */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
       <OfflineBanner />
       {/* ReadingProgressBar: thin gradient line at top that fills as user scrolls */}
       <ReadingProgressBar />

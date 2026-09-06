@@ -13,9 +13,10 @@ import {
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
 import usePageTitle from '../hooks/usePageTitle';
+import SEO from '../components/SEO';
 
 export default function Landing() {
-  usePageTitle('Welcome to Basha Lagbe — Find Your Perfect Home', { raw: true });
+  usePageTitle('Basha Lagbe | Find Your Perfect Rental Home in Bangladesh', { raw: true });
   const navigate = useNavigate();
 
   const features = [
@@ -36,8 +37,8 @@ export default function Landing() {
     },
     {
       icon: ChartBarIcon,
-      title: 'Property Analytics',
-      description: 'Get insights on market trends, pricing, and neighborhood data'
+      title: 'Market Insights',
+      description: 'Get insights on market trends, pricing, and neighbourhood data across Bangladesh'
     }
   ];
 
@@ -88,9 +89,9 @@ export default function Landing() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
             >
-              The most trusted platform for property rentals. Connect with verified landlords, 
-              browse premium properties, and find your perfect home with advanced search filters 
-              and AI-powered recommendations.
+              The most trusted platform for property rentals in Bangladesh. Connect with
+              verified landlords, browse premium properties, and find your perfect home
+              with powerful search filters and neighbourhood insights.
             </motion.p>
 
             <motion.div
@@ -104,18 +105,18 @@ export default function Landing() {
                 className="group flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 <UserGroupIcon className="w-6 h-6 mr-3" />
-                Sign In as User
+                Sign In
                 <ArrowRightIcon className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <button
-                onClick={() => navigate('/sign-in', { state: { adminMode: true } })}
-                className="group flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              <Link
+                to="/sign-up"
+                className="group flex items-center px-8 py-4 bg-white border-2 border-blue-600 text-blue-700 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
-                <ShieldCheckIcon className="w-6 h-6 mr-3" />
-                Admin Access
+                <HomeIcon className="w-6 h-6 mr-3" />
+                Create Account
                 <ArrowRightIcon className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </Link>
             </motion.div>
 
             <motion.div
@@ -128,7 +129,7 @@ export default function Landing() {
                 to="/sign-up"
                 className="text-blue-600 hover:text-blue-700 font-medium underline decoration-2 underline-offset-4"
               >
-                New to Basha Lagbe? Create an account →
+                New to Basha Lagbe? Create a free account
               </Link>
             </motion.div>
           </div>

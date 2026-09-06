@@ -224,7 +224,7 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div id="main-content" className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <SEO
         title="Find Rental Properties in Bangladesh"
         description="Discover thousands of verified rental properties across Bangladesh. Apartments, houses, studios and commercial spaces in Dhaka's best neighbourhoods."
