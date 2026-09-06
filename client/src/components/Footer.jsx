@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   HomeIcon,
   EnvelopeIcon,
@@ -109,7 +109,12 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm text-indigo-200">
                 <EnvelopeIcon className="w-4 h-4 text-yellow-400 shrink-0" />
-                support@bashalagbe.com
+                <a
+                  href="mailto:support@bashalagbe.com"
+                  className="hover:text-yellow-400 transition-colors duration-200"
+                >
+                  support@bashalagbe.com
+                </a>
               </li>
             </ul>
           </div>
@@ -120,9 +125,10 @@ const Footer = () => {
           <p className="text-indigo-300 text-xs">
             &copy; {currentYear} Basha Lagbe. All rights reserved.
           </p>
-          <div className="flex gap-5 text-xs text-indigo-400">
-            <Link to="/about" className="hover:text-yellow-400 transition-colors duration-200">Privacy Policy</Link>
-            <Link to="/about" className="hover:text-yellow-400 transition-colors duration-200">Terms of Service</Link>
+          <div className="flex flex-wrap gap-4 text-xs text-indigo-400 justify-center">
+            <Link to="/privacy-policy" className="hover:text-yellow-400 transition-colors duration-200">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-yellow-400 transition-colors duration-200">Terms of Service</Link>
+            <Link to="/accessibility" className="hover:text-yellow-400 transition-colors duration-200">Accessibility</Link>
           </div>
         </div>
       </div>

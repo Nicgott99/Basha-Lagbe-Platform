@@ -6,16 +6,19 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ToastProvider from "./components/Toast.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import { HelmetProvider } from "react-helmet-async";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ErrorBoundary>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ToastProvider>
-          <App />
-        </ToastProvider>
-      </PersistGate>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </PersistGate>
+      </Provider>
+    </HelmetProvider>
   </ErrorBoundary>
 );
 

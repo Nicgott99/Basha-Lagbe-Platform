@@ -24,6 +24,7 @@ import { HeartIcon as HeartSolid, StarIcon as StarSolid } from '@heroicons/react
 import FadeInSection from '../components/FadeInSection';
 import usePageTitle from '../hooks/usePageTitle';
 import SkeletonCard from '../components/SkeletonCard';
+import SEO from '../components/SEO';
 
 const Home = () => {
   usePageTitle('Find Rental Properties in Bangladesh');
@@ -224,6 +225,30 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <SEO
+        title="Find Rental Properties in Bangladesh"
+        description="Discover thousands of verified rental properties across Bangladesh. Apartments, houses, studios and commercial spaces in Dhaka's best neighbourhoods."
+        url="/"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "RealEstateAgent",
+          "name": "Basha Lagbe",
+          "description": "Bangladesh's most trusted property rental platform",
+          "url": "https://bashalagbe.com",
+          "logo": "https://bashalagbe.com/favicon-32x32.png",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Dhaka",
+            "addressCountry": "BD"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "email": "support@bashalagbe.com"
+          },
+          "sameAs": ["https://github.com/Nicgott99/Basha-Lagbe-Platform"]
+        }}
+      />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background with animated elements */}

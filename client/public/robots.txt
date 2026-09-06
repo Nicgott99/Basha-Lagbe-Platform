@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and private routes
+Disallow: /admin
+Disallow: /admin-dashboard
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /applications
+Disallow: /inquiries
+Disallow: /notifications
+Disallow: /create-listing
+Disallow: /add-property
+Disallow: /reset-password/
+
+# Sitemap location
+Sitemap: https://bashalagbe.com/sitemap.xml

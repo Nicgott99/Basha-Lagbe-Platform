@@ -28,6 +28,12 @@ import BackToTop from "./components/BackToTop";
 import OfflineBanner from "./components/OfflineBanner";
 import ReadingProgressBar from "./components/ReadingProgressBar";
 import useCrossTabSync from "./hooks/useCrossTabSync";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import Accessibility from "./pages/Accessibility";
+import ThankYou from "./pages/ThankYou";
+import CookieBanner from "./components/CookieBanner";
+import MobileStickyCTA from "./components/MobileStickyCTA";
 
 /**
  * AppRoutes — inner component that lives inside BrowserRouter.
@@ -57,6 +63,10 @@ function AppRoutes() {
         <Route path="/listing/:listingId" element={<Listing />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/accessibility" element={<Accessibility />} />
+        <Route path="/thank-you" element={<ThankYou />} />
 
         {/* User Routes */}
         <Route element={<UserRoute />}>
@@ -80,6 +90,8 @@ function AppRoutes() {
       </Routes>
       <Footer />
       <BackToTop />
+      <CookieBanner />
+      <MobileStickyCTA />
     </>
   );
 }
