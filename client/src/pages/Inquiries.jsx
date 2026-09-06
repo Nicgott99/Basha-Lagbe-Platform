@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChatBubbleLeftRightIcon,
@@ -16,9 +17,11 @@ import {
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
 import usePageTitle from '../hooks/usePageTitle';
+import EmptyState from '../components/EmptyState';
 
 export default function Inquiries() {
   usePageTitle('Inquiries');
+  const navigate = useNavigate();
   const [tab, setTab] = useState('my');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -414,15 +417,30 @@ export default function Inquiries() {
 
         {/* Empty State */}
         {!loading && filteredItems.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <ChatBubbleLeftRightIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No inquiries found</h3>
-            <p className="text-gray-500">
-              {tab === 'my' 
-                ? "You haven't made any inquiries yet. Start exploring properties!" 
-                : "No inquiries received yet. Your properties will attract inquiries soon!"}
-            </p>
-          </div>
+          <EmptyState
+            icon={ChatBubbleLeftRightIcon}
+            title={
+              searchTerm || filter !== 'all'
+                ? "No Matching Inquiries"
+                : tab === 'my'
+                ? "No Inquiries Sent"
+                : "No Inquiries Received"
+            }
+            description={
+              searchTerm || filter !== 'all'
+                ? "Try adjusting your search query or filter options."
+                : tab === 'my' 
+                ? "You haven't made any inquiries yet. Connect directly with landlords on any listing!" 
+                : "No inquiries received yet. Your properties will attract inquiries soon!"
+            }
+            action={
+              searchTerm || filter !== 'all'
+                ? { label: 'Clear Filters', onClick: () => { setSearchTerm(''); setFilter('all'); } }
+                : tab === 'my'
+                ? { label: 'Explore Properties', onClick: () => navigate('/search') }
+                : undefined
+            }
+          />
         )}
       </div>
     </div>

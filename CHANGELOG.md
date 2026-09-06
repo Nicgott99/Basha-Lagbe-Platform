@@ -5,6 +5,25 @@ All notable changes to the Basha Lagbe project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.27.0] - 2026-09-07
+
+### 🎨 Design & UX Consistency
+
+#### Universal EmptyState Adoption Across Engagement Pages
+- **`Notifications.jsx`** (`client/src/pages/Notifications.jsx`):
+  - Replaced inline ad-hoc empty container with animated `<EmptyState />` component.
+  - Added filter-aware empty states ("All Caught Up!" vs "No Notifications") and a contextual "Show All Notifications" action button.
+- **`Inquiries.jsx`** (`client/src/pages/Inquiries.jsx`):
+  - Replaced inline text div with `<EmptyState />`.
+  - Added tab and search-aware copy with contextual actions: "Explore Properties" CTA when inquiries are empty, or "Clear Filters" when search/filter returns zero results.
+- **`Applications.jsx`** (`client/src/pages/Applications.jsx`):
+  - Replaced static empty container with `<EmptyState />`.
+  - Added dynamic empty headings and descriptions with a direct "Explore Properties" CTA for tenant applications and a "Reset Filters" action when searching.
+- **`Dashboard.jsx`** (`client/src/pages/Dashboard.jsx`):
+  - Added `<EmptyState />` for the Recent Activities panel when no recent updates exist, providing a clean placeholder instead of an empty box.
+
+---
+
 ## [2.26.0] - 2026-09-06
 
 ### 🎨 Frontend & UX Hardening

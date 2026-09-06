@@ -15,11 +15,13 @@ import {
   BookmarkIcon,
   MagnifyingGlassIcon,
   MapPinIcon,
-  StarIcon
+  StarIcon,
+  ClockIcon
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import AdminPanel from "./AdminPanel";
 import usePageTitle from "../hooks/usePageTitle";
+import EmptyState from "../components/EmptyState";
 
 export default function Dashboard() {
   const { currentUser } = useSelector((state) => state.user);
@@ -255,22 +257,31 @@ export default function Dashboard() {
           >
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-6">Recent Activities</h3>
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-xl transition-colors duration-200">
-                    <div className={`p-2 rounded-lg ${getStatusColor(activity.status)}`}>
-                      {getActivityIcon(activity.type)}
+              {recentActivities.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-xl transition-colors duration-200">
+                      <div className={`p-2 rounded-lg ${getStatusColor(activity.status)}`}>
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-gray-900 font-medium">{activity.message}</p>
+                        <p className="text-gray-500 text-sm mt-1">{activity.time}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
+                        {activity.status}
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-gray-900 font-medium">{activity.message}</p>
-                      <p className="text-gray-500 text-sm mt-1">{activity.time}</p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(activity.status)}`}>
-                      {activity.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={ClockIcon}
+                  title="No Recent Activity"
+                  description="Your latest inquiries, applications, and updates will appear here."
+                  size="sm"
+                />
+              )}
             </div>
           </motion.div>
         </div>

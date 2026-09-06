@@ -15,6 +15,7 @@ import {
 import apiService from '../utils/apiService';
 import usePrevious from '../hooks/usePrevious';
 import usePageTitle from '../hooks/usePageTitle';
+import EmptyState from '../components/EmptyState';
 
 export default function Notifications() {
   usePageTitle('Notifications');
@@ -350,15 +351,18 @@ export default function Notifications() {
 
         {/* Empty State */}
         {!loading && filteredItems.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <BellIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-            <p className="text-gray-500">
-              {filter === 'unread' ? "You're all caught up! No unread notifications." :
-               filter === 'read' ? "No read notifications to show." :
-               "You don't have any notifications yet."}
-            </p>
-          </div>
+          <EmptyState
+            icon={BellIcon}
+            title={filter === 'unread' ? "All Caught Up!" : "No Notifications"}
+            description={
+              filter === 'unread'
+                ? "You have no unread notifications right now."
+                : filter === 'read'
+                ? "No read notifications to display."
+                : "You don't have any notifications yet. Updates about your properties, applications, and inquiries will appear here."
+            }
+            action={filter !== 'all' ? { label: 'Show All Notifications', onClick: () => setFilter('all') } : undefined}
+          />
         )}
 
         {/* Pagination */}

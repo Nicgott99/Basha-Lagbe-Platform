@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DocumentTextIcon,
@@ -18,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import apiService from '../utils/apiService';
 import usePageTitle from '../hooks/usePageTitle';
+import EmptyState from '../components/EmptyState';
 
 const statusOptions = [
   { key: 'under_review', label: 'Under Review', icon: ClockIcon, color: 'yellow' },
@@ -28,6 +30,7 @@ const statusOptions = [
 
 export default function Applications() {
   usePageTitle('My Applications');
+  const navigate = useNavigate();
   const [tab, setTab] = useState('my');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -527,15 +530,30 @@ export default function Applications() {
 
         {/* Empty State */}
         {!loading && filteredItems.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <DocumentTextIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
-            <p className="text-gray-500">
-              {tab === 'my' 
-                ? "You haven't submitted any applications yet. Start browsing properties!" 
-                : "No applications received yet. Your properties will attract applicants soon!"}
-            </p>
-          </div>
+          <EmptyState
+            icon={DocumentTextIcon}
+            title={
+              searchTerm || filter !== 'all'
+                ? "No Matching Applications"
+                : tab === 'my'
+                ? "No Applications Submitted"
+                : "No Applications Received"
+            }
+            description={
+              searchTerm || filter !== 'all'
+                ? "Try clearing your search query or status filter to view all applications."
+                : tab === 'my' 
+                ? "You haven't submitted any applications yet. Find your dream home and apply today!" 
+                : "No applications received yet. Your properties will attract verified applicants soon!"
+            }
+            action={
+              searchTerm || filter !== 'all'
+                ? { label: 'Reset Filters', onClick: () => { setSearchTerm(''); setFilter('all'); } }
+                : tab === 'my'
+                ? { label: 'Explore Properties', onClick: () => navigate('/search') }
+                : undefined
+            }
+          />
         )}
       </div>
     </div>
