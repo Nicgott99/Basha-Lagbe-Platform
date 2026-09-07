@@ -6,6 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import useShare from '../hooks/useShare';
 import useImageLazyLoad from '../hooks/useImageLazyLoad';
 import { formatRent, formatRelativeTime } from '../utils/formatters';
+import { encodeId } from '../utils/idCrypto';
+import { useCompare } from '../context/CompareContext';
+import { Scale } from 'lucide-react';
 import {
   HeartIcon,
   ShareIcon,
@@ -32,6 +35,7 @@ const PropertyCard = ({
   const navigate = useNavigate();
   const [showContact, setShowContact] = useState(false);
   const [landlord, setLandlord] = useState(null);
+  const { isInCompare, toggleCompare } = useCompare();
   // useShare handles Web Share API on mobile + clipboard fallback on desktop
   const { share, isShared, status, canShare } = useShare({ resetDelay: 2000 });
   // useImageLazyLoad defers image loading until the card scrolls near viewport
@@ -72,7 +76,7 @@ const PropertyCard = ({
     if (onView) {
       onView(property);
     } else {
-      navigate(`/property/${property._id}`);
+      navigate(`/listing/${encodeId(property._id)}`);
     }
   };
 
@@ -147,6 +151,8 @@ const PropertyCard = ({
           ref={imgRef}
           src={imageSrc || '/api/placeholder/400/300'}
           alt={property.title}
+          loading="lazy"
+          decoding="async"
           className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 transition-opacity ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
@@ -183,12 +189,32 @@ const PropertyCard = ({
               whileTap={{ scale: 0.9 }}
               onClick={handleSave}
               className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
+              title="Save property"
+              aria-label="Save property"
             >
               {saved ? (
                 <HeartSolid className="w-5 h-5 text-red-500" />
               ) : (
                 <HeartIcon className="w-5 h-5 text-gray-600 hover:text-red-500" />
               )}
+            </motion.button>
+            {/* Compare button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleCompare(property);
+              }}
+              title={isInCompare(property._id) ? "Remove from compare" : "Add to comparison"}
+              aria-label={isInCompare(property._id) ? "Remove from comparison" : "Add to comparison"}
+              className={`p-2 backdrop-blur-sm rounded-full shadow-lg transition-colors ${
+                isInCompare(property._id)
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-white/90 text-gray-600 hover:text-primary-600 hover:bg-white'
+              }`}
+            >
+              <Scale className="w-5 h-5" />
             </motion.button>
             {/* Share button — Web Share API on mobile, clipboard fallback on desktop */}
             <motion.button
@@ -200,6 +226,7 @@ const PropertyCard = ({
                 status === 'copied' ? 'Link copied!' :
                 canShare ? 'Share via apps' : 'Copy link'
               }
+              aria-label="Share property link"
               className="relative p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-colors"
             >
               {isShared ? (

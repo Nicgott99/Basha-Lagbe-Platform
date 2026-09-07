@@ -101,11 +101,16 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-indigo-200">
                 <MapPinIcon className="w-4 h-4 mt-0.5 text-yellow-400 shrink-0" />
-                Dhaka, Bangladesh
+                House 12, Road 3, Block D, Bashundhara R/A, Dhaka 1229
               </li>
               <li className="flex items-center gap-2 text-sm text-indigo-200">
                 <PhoneIcon className="w-4 h-4 text-yellow-400 shrink-0" />
-                +880 1700-000000
+                <a
+                  href="tel:+8801712345678"
+                  className="hover:text-yellow-400 transition-colors duration-200"
+                >
+                  +880 17 1234 5678
+                </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-indigo-200">
                 <EnvelopeIcon className="w-4 h-4 text-yellow-400 shrink-0" />

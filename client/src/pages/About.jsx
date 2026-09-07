@@ -159,8 +159,12 @@ const About = () => {
             >
               <img
                 src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop"
-                alt="Modern apartment interior"
+                alt="Modern apartment interior with contemporary furnishings in Dhaka"
                 className="rounded-3xl shadow-2xl"
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="400"
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl">
                 <div className="flex items-center gap-4">
@@ -190,8 +194,12 @@ const About = () => {
             >
               <img
                 src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop"
-                alt="Team meeting"
+                alt="Basha Lagbe team collaborating in a meeting"
                 className="rounded-3xl shadow-2xl"
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="400"
               />
               <div className="absolute -top-6 -right-6 bg-white p-6 rounded-2xl shadow-xl">
                 <div className="flex items-center gap-4">

@@ -35,6 +35,9 @@ import Accessibility from "./pages/Accessibility";
 import ThankYou from "./pages/ThankYou";
 import CookieBanner from "./components/CookieBanner";
 import MobileStickyCTA from "./components/MobileStickyCTA";
+import { CompareProvider } from "./context/CompareContext";
+import CompareFloatingBar from "./components/CompareFloatingBar";
+import CompareModal from "./components/CompareModal";
 
 /**
  * AppRoutes — inner component that lives inside BrowserRouter.
@@ -99,6 +102,8 @@ function AppRoutes() {
       <BackToTop />
       <CookieBanner />
       <MobileStickyCTA />
+      <CompareFloatingBar />
+      <CompareModal />
     </>
   );
 }
@@ -106,7 +111,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <CompareProvider>
+        <AppRoutes />
+      </CompareProvider>
     </BrowserRouter>
   );
 }

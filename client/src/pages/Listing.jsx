@@ -22,9 +22,12 @@ import {
   BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import { Scale } from "lucide-react";
 import useClipboard from "../hooks/useClipboard";
 import usePageTitle from "../hooks/usePageTitle";
 import SEO from "../components/SEO";
+import { decodeId } from "../utils/idCrypto";
+import { useCompare } from "../context/CompareContext";
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -100,13 +103,16 @@ export default function Listing() {
   usePageTitle(listing ? `${listing.name || listing.title} | Basha Lagbe` : "Property Details", { raw: true });
   const { isCopied, copy } = useClipboard({ resetDelay: 2500 });
   const { currentUser } = useSelector((state) => state.user);
+  const { addToCompare, toggleCompare, isInCompare, setIsCompareOpen } = useCompare();
 
   const fetchListing = async () => {
     try {
       setLoading(true);
       setError(false);
       const { apiRequest } = await import("../utils/apiUtils");
-      const data = await apiRequest(`/server/listing/get/${listingId}`);
+      // Decode URL-safe base64 ID back to raw MongoDB ObjectID
+      const rawId = decodeId(listingId);
+      const data = await apiRequest(`/server/listing/get/${rawId}`);
       if (data.success === false) {
         setError(true);
       } else {
@@ -128,6 +134,7 @@ export default function Listing() {
     setContactLoading(true);
     try {
       const { apiRequest } = await import("../utils/apiUtils");
+      // userRef is already a raw MongoDB ObjectID from the listing document
       const data = await apiRequest(`/server/user/${listing.userRef}`);
       if (data.success !== false) {
         setLandlord(data);
@@ -211,6 +218,22 @@ export default function Listing() {
             <ChevronLeftIcon className="w-4 h-4" />
             Back
           </button>
+
+          {/* Compare button */}
+          {listing && (
+            <button
+              onClick={() => toggleCompare(listing)}
+              aria-label={isInCompare(listing._id) ? "Remove from comparison" : "Add to comparison"}
+              className={`absolute top-4 right-28 z-20 flex items-center gap-1.5 backdrop-blur-sm font-semibold px-4 py-2 rounded-full shadow transition text-sm ${
+                isInCompare(listing._id)
+                  ? "bg-primary-600 text-white hover:bg-primary-700"
+                  : "bg-white/90 text-gray-700 hover:bg-white"
+              }`}
+            >
+              <Scale className="w-4 h-4" />
+              <span>{isInCompare(listing._id) ? "Comparing" : "Compare"}</span>
+            </button>
+          )}
 
           {/* Share button */}
           <button
@@ -423,6 +446,23 @@ export default function Listing() {
                   >
                     Sign In to Contact
                   </a>
+                )}
+
+                {/* Compare CTA in Sidebar */}
+                {listing && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!isInCompare(listing._id)) {
+                        addToCompare(listing);
+                      }
+                      setIsCompareOpen(true);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 border border-gray-200 hover:border-primary-500 hover:bg-primary-50/50 text-gray-700 hover:text-primary-700 font-semibold py-3 px-4 rounded-2xl transition duration-200 mt-3 text-sm shadow-sm"
+                  >
+                    <Scale className="w-4 h-4 text-primary-600" />
+                    <span>{isInCompare(listing._id) ? "View in Comparison (Active)" : "Compare with Similar Properties"}</span>
+                  </button>
                 )}
 
                 <p className="text-xs text-gray-400 text-center mt-4">

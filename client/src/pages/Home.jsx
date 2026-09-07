@@ -522,8 +522,12 @@ const Home = () => {
                 <div className="relative overflow-hidden">
                   <img
                     src={property.imageUrls?.[0] || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop'}
-                    alt={property.title}
+                    alt={`${property.title} — rental property in ${property.location?.area || 'Bangladesh'}`}
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                    width="800"
+                    height="256"
                   />
                   
                   {/* Property Badges */}
@@ -723,8 +727,12 @@ const Home = () => {
                   <div className="flex items-center justify-center">
                     <img
                       src={testimonials[currentTestimonial].image}
-                      alt={testimonials[currentTestimonial].name}
+                      alt={`Photo of ${testimonials[currentTestimonial].name}`}
                       className="w-16 h-16 rounded-full mr-4 object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      width="64"
+                      height="64"
                     />
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">

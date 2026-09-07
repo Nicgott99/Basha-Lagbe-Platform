@@ -691,7 +691,11 @@ const AdminPanel = () => {
                           <img
                             className="h-12 w-12 rounded-lg object-cover"
                             src={property.imageUrls?.[0] || '/api/placeholder/100/100'}
-                            alt=""
+                            alt={`Thumbnail for ${property.title}`}
+                            loading="lazy"
+                            decoding="async"
+                            width="48"
+                            height="48"
                           />
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900 max-w-xs truncate">

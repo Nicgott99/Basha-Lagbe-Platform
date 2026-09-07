@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   XMarkIcon,
@@ -18,6 +19,7 @@ import { useToast } from '../hooks/useToast';
 export default function ContactModal({ isOpen, onClose, property, landlord }) {
   const { currentUser } = useSelector((state) => state.user);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     subject: '',
@@ -161,9 +163,7 @@ export default function ContactModal({ isOpen, onClose, property, landlord }) {
       const data = await response.json();
 
       if (data.success) {
-        toast.success('Your inquiry has been sent successfully!');
-        onClose();
-        
+        // Reset form state
         setFormData({
           subject: '',
           message: '',
@@ -175,6 +175,9 @@ export default function ContactModal({ isOpen, onClose, property, landlord }) {
           questions: []
         });
         setStep(1);
+        onClose();
+        // Navigate to thank-you confirmation page
+        navigate('/thank-you?type=contact');
       } else {
         toast.error(data.message || 'Failed to send inquiry');
       }
