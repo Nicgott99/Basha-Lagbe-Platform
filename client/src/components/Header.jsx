@@ -5,6 +5,8 @@ import { signOutUserStart, signOutUserSuccess, signOutUserFailure } from "../red
 import { useToast } from "../hooks/useToast";
 import apiService from "../utils/apiService";
 import useStickyHeader from "../hooks/useStickyHeader";
+import RentCalculatorModal from "./RentCalculatorModal";
+import { Calculator } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -14,6 +16,7 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showRentCalculator, setShowRentCalculator] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -109,6 +112,14 @@ export default function Header() {
           >
             About
           </Link>
+          <button
+            type="button"
+            onClick={() => setShowRentCalculator(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <Calculator className="w-4 h-4 text-yellow-400" />
+            <span>Rent Calculator</span>
+          </button>
           {currentUser && isAdminOrLandlord && (
             <Link
               to="/add-property"
@@ -243,6 +254,17 @@ export default function Header() {
           >
             About
           </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setShowRentCalculator(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <Calculator className="w-4 h-4 text-yellow-400" />
+            <span>Rent Calculator (৳)</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -277,6 +299,10 @@ export default function Header() {
           )}
         </div>
       )}
+      <RentCalculatorModal
+        isOpen={showRentCalculator}
+        onClose={() => setShowRentCalculator(false)}
+      />
     </header>
   );
 }

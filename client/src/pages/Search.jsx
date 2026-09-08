@@ -23,6 +23,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import SkeletonCard from '../components/SkeletonCard';
+import RentCalculatorModal from '../components/RentCalculatorModal';
+import { Calculator, Sparkles } from 'lucide-react';
 
 const Search = () => {
   usePageTitle('Search Properties');
@@ -55,6 +57,7 @@ const Search = () => {
   const [viewMode, setViewMode] = useLocalStorage('search-view-mode', 'grid');
   const [sortBy, setSortBy] = useLocalStorage('search-sort-by', 'relevance');
   const [savedProperties, setSavedProperties] = useState(new Set());
+  const [showCalculator, setShowCalculator] = useState(false);
 
   // Network-aware loading: adapts page size and shows slow connection banner
   // based on the user's actual connection quality (important for Bangladesh mobile users)
@@ -509,10 +512,99 @@ const Search = () => {
                 <p className="text-xs text-red-500 self-center">{geoError}</p>
               )}
               <button
+                type="button"
+                onClick={() => setShowCalculator(true)}
+                className="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-4 py-3 rounded-lg font-medium transition duration-200 flex items-center gap-1.5"
+                title="Calculate what rent you can afford"
+              >
+                <Calculator className="w-4 h-4 text-amber-600" />
+                <span className="hidden sm:inline">Affordability</span>
+              </button>
+              <button
                 type="submit"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition duration-200"
               >
                 Search
+              </button>
+            </div>
+
+            {/* Quick Filter Presets */}
+            <div className="flex items-center gap-2 overflow-x-auto pt-3 pb-1 text-xs scrollbar-none">
+              <span className="text-gray-400 font-medium flex-shrink-0 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-primary-500" /> Quick:
+              </span>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('priceRange', { min: '', max: '20000' })}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.priceRange.max === '20000' && !filters.priceRange.min
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Under ৳20k
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('priceRange', { min: '20000', max: '45000' })}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.priceRange.min === '20000' && filters.priceRange.max === '45000'
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                ৳20k – ৳45k
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('bedrooms', filters.bedrooms === '3' ? '' : '3')}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.bedrooms === '3'
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                3+ Beds Family
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('propertyType', filters.propertyType === 'Apartment' ? '' : 'Apartment')}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.propertyType === 'Apartment'
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Apartments
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAmenityToggle('Generator')}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.amenities.includes('Generator')
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                ⚡ Generator Backup
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAmenityToggle('Furnished')}
+                className={`px-3 py-1 rounded-full border transition-colors flex-shrink-0 font-medium ${
+                  filters.amenities.includes('Furnished')
+                    ? 'bg-primary-50 text-primary-700 border-primary-300 font-bold'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                🛋️ Furnished
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCalculator(true)}
+                className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100 flex-shrink-0 font-semibold flex items-center gap-1"
+              >
+                <Calculator className="w-3 h-3 text-amber-600" /> Calculate Budget (৳)
               </button>
             </div>
           </form>
@@ -760,6 +852,10 @@ const Search = () => {
           </div>
         )}
       </div>
+      <RentCalculatorModal
+        isOpen={showCalculator}
+        onClose={() => setShowCalculator(false)}
+      />
     </div>
   );
 };
