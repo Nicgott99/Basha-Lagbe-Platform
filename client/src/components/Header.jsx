@@ -6,7 +6,8 @@ import { useToast } from "../hooks/useToast";
 import apiService from "../utils/apiService";
 import useStickyHeader from "../hooks/useStickyHeader";
 import RentCalculatorModal from "./RentCalculatorModal";
-import { Calculator } from "lucide-react";
+import AreaGuideModal from "./AreaGuideModal";
+import { Calculator, MapPin } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -17,6 +18,7 @@ export default function Header() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showRentCalculator, setShowRentCalculator] = useState(false);
+  const [showAreaGuide, setShowAreaGuide] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -119,6 +121,14 @@ export default function Header() {
           >
             <Calculator className="w-4 h-4 text-yellow-400" />
             <span>Rent Calculator</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowAreaGuide(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <MapPin className="w-4 h-4 text-emerald-400" />
+            <span>Area Guide</span>
           </button>
           {currentUser && isAdminOrLandlord && (
             <Link
@@ -265,6 +275,17 @@ export default function Header() {
             <Calculator className="w-4 h-4 text-yellow-400" />
             <span>Rent Calculator (৳)</span>
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowAreaGuide(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <MapPin className="w-4 h-4 text-emerald-400" />
+            <span>Neighborhood Guide</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -302,6 +323,10 @@ export default function Header() {
       <RentCalculatorModal
         isOpen={showRentCalculator}
         onClose={() => setShowRentCalculator(false)}
+      />
+      <AreaGuideModal
+        isOpen={showAreaGuide}
+        onClose={() => setShowAreaGuide(false)}
       />
     </header>
   );

@@ -24,7 +24,8 @@ import {
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import SkeletonCard from '../components/SkeletonCard';
 import RentCalculatorModal from '../components/RentCalculatorModal';
-import { Calculator, Sparkles } from 'lucide-react';
+import AreaGuideModal from '../components/AreaGuideModal';
+import { Calculator, Sparkles, MapPin } from 'lucide-react';
 
 const Search = () => {
   usePageTitle('Search Properties');
@@ -58,6 +59,7 @@ const Search = () => {
   const [sortBy, setSortBy] = useLocalStorage('search-sort-by', 'relevance');
   const [savedProperties, setSavedProperties] = useState(new Set());
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showAreaGuide, setShowAreaGuide] = useState(false);
 
   // Network-aware loading: adapts page size and shows slow connection banner
   // based on the user's actual connection quality (important for Bangladesh mobile users)
@@ -606,6 +608,13 @@ const Search = () => {
               >
                 <Calculator className="w-3 h-3 text-amber-600" /> Calculate Budget (৳)
               </button>
+              <button
+                type="button"
+                onClick={() => setShowAreaGuide(true)}
+                className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 flex-shrink-0 font-semibold flex items-center gap-1"
+              >
+                <MapPin className="w-3 h-3 text-emerald-600" /> Area Guide
+              </button>
             </div>
           </form>
 
@@ -855,6 +864,10 @@ const Search = () => {
       <RentCalculatorModal
         isOpen={showCalculator}
         onClose={() => setShowCalculator(false)}
+      />
+      <AreaGuideModal
+        isOpen={showAreaGuide}
+        onClose={() => setShowAreaGuide(false)}
       />
     </div>
   );
