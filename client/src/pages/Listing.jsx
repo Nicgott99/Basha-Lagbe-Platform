@@ -22,12 +22,13 @@ import {
   BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { Scale } from "lucide-react";
+import { Scale, Calendar } from "lucide-react";
 import useClipboard from "../hooks/useClipboard";
 import usePageTitle from "../hooks/usePageTitle";
 import SEO from "../components/SEO";
 import { decodeId } from "../utils/idCrypto";
 import { useCompare } from "../context/CompareContext";
+import ScheduleTourModal from "../components/ScheduleTourModal";
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -99,6 +100,7 @@ export default function Listing() {
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [landlord, setLandlord] = useState(null);
   const [contactLoading, setContactLoading] = useState(false);
+  const [showScheduleTour, setShowScheduleTour] = useState(false);
 
   usePageTitle(listing ? `${listing.name || listing.title} | Basha Lagbe` : "Property Details", { raw: true });
   const { isCopied, copy } = useClipboard({ resetDelay: 2500 });
@@ -448,6 +450,18 @@ export default function Listing() {
                   </a>
                 )}
 
+                {/* Schedule Viewing CTA */}
+                {listing && (
+                  <button
+                    type="button"
+                    onClick={() => setShowScheduleTour(true)}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3.5 px-6 rounded-2xl transition-all duration-200 shadow-md text-sm mt-3"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Schedule a Viewing / Tour</span>
+                  </button>
+                )}
+
                 {/* Compare CTA in Sidebar */}
                 {listing && (
                   <button
@@ -473,6 +487,12 @@ export default function Listing() {
           </div>
         </div>
       </main>
+      <ScheduleTourModal
+        isOpen={showScheduleTour}
+        onClose={() => setShowScheduleTour(false)}
+        property={listing}
+        landlord={landlord}
+      />
     </>
   );
 }

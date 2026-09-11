@@ -5,10 +5,19 @@ import {
   HomeIcon,
   MagnifyingGlassIcon,
   EnvelopeIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import SEO from "../components/SEO";
 
 const messages = {
+  tour: {
+    title: "Viewing Request Scheduled!",
+    subtitle: "Your property inspection appointment has been sent to the landlord.",
+    body: "The landlord will confirm your inspection time slot shortly via SMS or Phone. Please ensure you are available at your selected date and time.",
+    icon: CalendarIcon,
+    color: "from-amber-500 to-orange-500",
+    bg: "from-amber-50 to-orange-50",
+  },
   application: {
     title: "Application Submitted!",
     subtitle: "Your rental application has been sent to the landlord.",
