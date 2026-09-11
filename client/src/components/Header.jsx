@@ -7,7 +7,8 @@ import apiService from "../utils/apiService";
 import useStickyHeader from "../hooks/useStickyHeader";
 import RentCalculatorModal from "./RentCalculatorModal";
 import AreaGuideModal from "./AreaGuideModal";
-import { Calculator, MapPin } from "lucide-react";
+import MovingChecklistModal from "./MovingChecklistModal";
+import { Calculator, MapPin, CheckSquare } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -19,6 +20,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showRentCalculator, setShowRentCalculator] = useState(false);
   const [showAreaGuide, setShowAreaGuide] = useState(false);
+  const [showMovingChecklist, setShowMovingChecklist] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -129,6 +131,14 @@ export default function Header() {
           >
             <MapPin className="w-4 h-4 text-emerald-400" />
             <span>Area Guide</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMovingChecklist(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <CheckSquare className="w-4 h-4 text-cyan-300" />
+            <span>Moving Guide</span>
           </button>
           {currentUser && isAdminOrLandlord && (
             <Link
@@ -286,6 +296,17 @@ export default function Header() {
             <MapPin className="w-4 h-4 text-emerald-400" />
             <span>Neighborhood Guide</span>
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowMovingChecklist(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <CheckSquare className="w-4 h-4 text-cyan-300" />
+            <span>Moving & Legal Guide</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -327,6 +348,10 @@ export default function Header() {
       <AreaGuideModal
         isOpen={showAreaGuide}
         onClose={() => setShowAreaGuide(false)}
+      />
+      <MovingChecklistModal
+        isOpen={showMovingChecklist}
+        onClose={() => setShowMovingChecklist(false)}
       />
     </header>
   );

@@ -22,13 +22,14 @@ import {
   BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { Scale, Calendar } from "lucide-react";
+import { Scale, Calendar, CheckSquare } from "lucide-react";
 import useClipboard from "../hooks/useClipboard";
 import usePageTitle from "../hooks/usePageTitle";
 import SEO from "../components/SEO";
 import { decodeId } from "../utils/idCrypto";
 import { useCompare } from "../context/CompareContext";
 import ScheduleTourModal from "../components/ScheduleTourModal";
+import MovingChecklistModal from "../components/MovingChecklistModal";
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -101,6 +102,7 @@ export default function Listing() {
   const [landlord, setLandlord] = useState(null);
   const [contactLoading, setContactLoading] = useState(false);
   const [showScheduleTour, setShowScheduleTour] = useState(false);
+  const [showMovingChecklist, setShowMovingChecklist] = useState(false);
 
   usePageTitle(listing ? `${listing.name || listing.title} | Basha Lagbe` : "Property Details", { raw: true });
   const { isCopied, copy } = useClipboard({ resetDelay: 2500 });
@@ -479,6 +481,16 @@ export default function Listing() {
                   </button>
                 )}
 
+                {/* Moving & Legal Guide CTA */}
+                <button
+                  type="button"
+                  onClick={() => setShowMovingChecklist(true)}
+                  className="w-full flex items-center justify-center gap-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-900 border border-cyan-200 font-semibold py-3 px-4 rounded-2xl transition duration-200 mt-2 text-xs shadow-sm"
+                >
+                  <CheckSquare className="w-3.5 h-3.5 text-cyan-600" />
+                  <span>Tenant Moving & DMP Police Guide</span>
+                </button>
+
                 <p className="text-xs text-gray-400 text-center mt-4">
                   Listed by Basha Lagbe Verified Agent
                 </p>
@@ -492,6 +504,10 @@ export default function Listing() {
         onClose={() => setShowScheduleTour(false)}
         property={listing}
         landlord={landlord}
+      />
+      <MovingChecklistModal
+        isOpen={showMovingChecklist}
+        onClose={() => setShowMovingChecklist(false)}
       />
     </>
   );
