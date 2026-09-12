@@ -8,7 +8,8 @@ import useStickyHeader from "../hooks/useStickyHeader";
 import RentCalculatorModal from "./RentCalculatorModal";
 import AreaGuideModal from "./AreaGuideModal";
 import MovingChecklistModal from "./MovingChecklistModal";
-import { Calculator, MapPin, CheckSquare } from "lucide-react";
+import RentalYieldCalculatorModal from "./RentalYieldCalculatorModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -21,6 +22,7 @@ export default function Header() {
   const [showRentCalculator, setShowRentCalculator] = useState(false);
   const [showAreaGuide, setShowAreaGuide] = useState(false);
   const [showMovingChecklist, setShowMovingChecklist] = useState(false);
+  const [showYieldCalculator, setShowYieldCalculator] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -139,6 +141,14 @@ export default function Header() {
           >
             <CheckSquare className="w-4 h-4 text-cyan-300" />
             <span>Moving Guide</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowYieldCalculator(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <TrendingUp className="w-4 h-4 text-amber-300" />
+            <span>Landlord ROI</span>
           </button>
           {currentUser && isAdminOrLandlord && (
             <Link
@@ -307,6 +317,17 @@ export default function Header() {
             <CheckSquare className="w-4 h-4 text-cyan-300" />
             <span>Moving & Legal Guide</span>
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowYieldCalculator(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <TrendingUp className="w-4 h-4 text-amber-300" />
+            <span>Landlord ROI Calculator</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -352,6 +373,10 @@ export default function Header() {
       <MovingChecklistModal
         isOpen={showMovingChecklist}
         onClose={() => setShowMovingChecklist(false)}
+      />
+      <RentalYieldCalculatorModal
+        isOpen={showYieldCalculator}
+        onClose={() => setShowYieldCalculator(false)}
       />
     </header>
   );
