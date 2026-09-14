@@ -9,7 +9,8 @@ import RentCalculatorModal from "./RentCalculatorModal";
 import AreaGuideModal from "./AreaGuideModal";
 import MovingChecklistModal from "./MovingChecklistModal";
 import RentalYieldCalculatorModal from "./RentalYieldCalculatorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp } from "lucide-react";
+import RoommateFinderModal from "./RoommateFinderModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -23,6 +24,7 @@ export default function Header() {
   const [showAreaGuide, setShowAreaGuide] = useState(false);
   const [showMovingChecklist, setShowMovingChecklist] = useState(false);
   const [showYieldCalculator, setShowYieldCalculator] = useState(false);
+  const [showRoommateFinder, setShowRoommateFinder] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -149,6 +151,14 @@ export default function Header() {
           >
             <TrendingUp className="w-4 h-4 text-amber-300" />
             <span>Landlord ROI</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRoommateFinder(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <Users className="w-4 h-4 text-yellow-300" />
+            <span>Find Roommate</span>
           </button>
           {currentUser && isAdminOrLandlord && (
             <Link
@@ -328,6 +338,17 @@ export default function Header() {
             <TrendingUp className="w-4 h-4 text-amber-300" />
             <span>Landlord ROI Calculator</span>
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowRoommateFinder(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <Users className="w-4 h-4 text-yellow-300" />
+            <span>Sublets & Roommates</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -377,6 +398,10 @@ export default function Header() {
       <RentalYieldCalculatorModal
         isOpen={showYieldCalculator}
         onClose={() => setShowYieldCalculator(false)}
+      />
+      <RoommateFinderModal
+        isOpen={showRoommateFinder}
+        onClose={() => setShowRoommateFinder(false)}
       />
     </header>
   );
