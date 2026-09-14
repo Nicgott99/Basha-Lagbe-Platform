@@ -10,7 +10,8 @@ import AreaGuideModal from "./AreaGuideModal";
 import MovingChecklistModal from "./MovingChecklistModal";
 import RentalYieldCalculatorModal from "./RentalYieldCalculatorModal";
 import RoommateFinderModal from "./RoommateFinderModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users } from "lucide-react";
+import EmergencyHotlinesModal from "./EmergencyHotlinesModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -25,6 +26,7 @@ export default function Header() {
   const [showMovingChecklist, setShowMovingChecklist] = useState(false);
   const [showYieldCalculator, setShowYieldCalculator] = useState(false);
   const [showRoommateFinder, setShowRoommateFinder] = useState(false);
+  const [showHotlines, setShowHotlines] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -159,6 +161,14 @@ export default function Header() {
           >
             <Users className="w-4 h-4 text-yellow-300" />
             <span>Find Roommate</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowHotlines(true)}
+            className="flex items-center gap-1.5 text-rose-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
+            <span>Hotlines 24/7</span>
           </button>
           {currentUser && isAdminOrLandlord && (
             <Link
@@ -349,6 +359,17 @@ export default function Header() {
             <Users className="w-4 h-4 text-yellow-300" />
             <span>Sublets & Roommates</span>
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowHotlines(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-rose-300 hover:text-white transition duration-200"
+          >
+            <PhoneCall className="w-4 h-4 text-rose-400" />
+            <span>Emergency & Utility Hotlines (999/WASA/DESCO)</span>
+          </button>
 
           {currentUser ? (
             <>
@@ -402,6 +423,10 @@ export default function Header() {
       <RoommateFinderModal
         isOpen={showRoommateFinder}
         onClose={() => setShowRoommateFinder(false)}
+      />
+      <EmergencyHotlinesModal
+        isOpen={showHotlines}
+        onClose={() => setShowHotlines(false)}
       />
     </header>
   );
