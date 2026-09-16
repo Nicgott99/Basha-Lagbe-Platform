@@ -12,7 +12,8 @@ import RentalYieldCalculatorModal from "./RentalYieldCalculatorModal";
 import RoommateFinderModal from "./RoommateFinderModal";
 import EmergencyHotlinesModal from "./EmergencyHotlinesModal";
 import FAQModal from "./FAQModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle } from "lucide-react";
+import MoversCostEstimatorModal from "./MoversCostEstimatorModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -29,6 +30,7 @@ export default function Header() {
   const [showRoommateFinder, setShowRoommateFinder] = useState(false);
   const [showHotlines, setShowHotlines] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
+  const [showMoversEstimator, setShowMoversEstimator] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -171,6 +173,14 @@ export default function Header() {
           >
             <PhoneCall className="w-4 h-4 text-rose-400 animate-pulse" />
             <span>Hotlines 24/7</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMoversEstimator(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <Truck className="w-4 h-4 text-amber-400" />
+            <span>Movers Estimator</span>
           </button>
           <button
             type="button"
@@ -383,6 +393,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowMoversEstimator(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <Truck className="w-4 h-4 text-amber-400" />
+            <span>Movers & Truck Fare Estimator</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -448,6 +469,10 @@ export default function Header() {
       <EmergencyHotlinesModal
         isOpen={showHotlines}
         onClose={() => setShowHotlines(false)}
+      />
+      <MoversCostEstimatorModal
+        isOpen={showMoversEstimator}
+        onClose={() => setShowMoversEstimator(false)}
       />
       <FAQModal
         isOpen={showFAQ}
