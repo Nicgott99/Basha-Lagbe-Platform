@@ -13,7 +13,8 @@ import RoommateFinderModal from "./RoommateFinderModal";
 import EmergencyHotlinesModal from "./EmergencyHotlinesModal";
 import FAQModal from "./FAQModal";
 import MoversCostEstimatorModal from "./MoversCostEstimatorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck } from "lucide-react";
+import UtilityBillSplitterModal from "./UtilityBillSplitterModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -31,6 +32,7 @@ export default function Header() {
   const [showHotlines, setShowHotlines] = useState(false);
   const [showFAQ, setShowFAQ] = useState(false);
   const [showMoversEstimator, setShowMoversEstimator] = useState(false);
+  const [showUtilitySplitter, setShowUtilitySplitter] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -181,6 +183,14 @@ export default function Header() {
           >
             <Truck className="w-4 h-4 text-amber-400" />
             <span>Movers Estimator</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUtilitySplitter(true)}
+            className="flex items-center gap-1.5 text-white/90 hover:text-yellow-400 transition duration-300 font-medium pb-1"
+          >
+            <Receipt className="w-4 h-4 text-teal-300" />
+            <span>Bill Splitter</span>
           </button>
           <button
             type="button"
@@ -404,6 +414,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowUtilitySplitter(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-medium text-white hover:text-yellow-400 transition duration-200"
+          >
+            <Receipt className="w-4 h-4 text-teal-300" />
+            <span>Utility Bill Splitter & Prepaid Meter</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -473,6 +494,10 @@ export default function Header() {
       <MoversCostEstimatorModal
         isOpen={showMoversEstimator}
         onClose={() => setShowMoversEstimator(false)}
+      />
+      <UtilityBillSplitterModal
+        isOpen={showUtilitySplitter}
+        onClose={() => setShowUtilitySplitter(false)}
       />
       <FAQModal
         isOpen={showFAQ}
