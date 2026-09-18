@@ -14,7 +14,8 @@ import EmergencyHotlinesModal from "./EmergencyHotlinesModal";
 import FAQModal from "./FAQModal";
 import MoversCostEstimatorModal from "./MoversCostEstimatorModal";
 import UtilityBillSplitterModal from "./UtilityBillSplitterModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt } from "lucide-react";
+import TenancyAgreementGeneratorModal from "./TenancyAgreementGeneratorModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -33,6 +34,7 @@ export default function Header() {
   const [showFAQ, setShowFAQ] = useState(false);
   const [showMoversEstimator, setShowMoversEstimator] = useState(false);
   const [showUtilitySplitter, setShowUtilitySplitter] = useState(false);
+  const [showAgreementGenerator, setShowAgreementGenerator] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -191,6 +193,14 @@ export default function Header() {
           >
             <Receipt className="w-4 h-4 text-teal-300" />
             <span>Bill Splitter</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowAgreementGenerator(true)}
+            className="flex items-center gap-1.5 text-purple-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <FileSignature className="w-4 h-4 text-purple-400" />
+            <span>Rental Deed (চুক্তিপত্র)</span>
           </button>
           <button
             type="button"
@@ -425,6 +435,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowAgreementGenerator(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-purple-300 hover:text-white transition duration-200"
+          >
+            <FileSignature className="w-4 h-4 text-purple-400" />
+            <span>Rental Agreement Deed (চুক্তিপত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -498,6 +519,10 @@ export default function Header() {
       <UtilityBillSplitterModal
         isOpen={showUtilitySplitter}
         onClose={() => setShowUtilitySplitter(false)}
+      />
+      <TenancyAgreementGeneratorModal
+        isOpen={showAgreementGenerator}
+        onClose={() => setShowAgreementGenerator(false)}
       />
       <FAQModal
         isOpen={showFAQ}
