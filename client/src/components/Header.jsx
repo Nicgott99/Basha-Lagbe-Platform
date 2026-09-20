@@ -16,7 +16,8 @@ import MoversCostEstimatorModal from "./MoversCostEstimatorModal";
 import UtilityBillSplitterModal from "./UtilityBillSplitterModal";
 import TenancyAgreementGeneratorModal from "./TenancyAgreementGeneratorModal";
 import MetroTransitHubModal from "./MetroTransitHubModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train } from "lucide-react";
+import RentReceiptGeneratorModal from "./RentReceiptGeneratorModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -37,6 +38,7 @@ export default function Header() {
   const [showUtilitySplitter, setShowUtilitySplitter] = useState(false);
   const [showAgreementGenerator, setShowAgreementGenerator] = useState(false);
   const [showMetroTransitHub, setShowMetroTransitHub] = useState(false);
+  const [showRentReceipt, setShowRentReceipt] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -211,6 +213,14 @@ export default function Header() {
           >
             <Train className="w-4 h-4 text-emerald-400" />
             <span>Metro Rail Hub</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRentReceipt(true)}
+            className="flex items-center gap-1.5 text-cyan-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Receipt className="w-4 h-4 text-cyan-400" />
+            <span>Money Receipt (ভাড়ার রসিদ)</span>
           </button>
           <button
             type="button"
@@ -467,6 +477,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowRentReceipt(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-cyan-300 hover:text-white transition duration-200"
+          >
+            <Receipt className="w-4 h-4 text-cyan-400" />
+            <span>Monthly Rent Money Receipt (ভাড়ার রসিদ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -548,6 +569,10 @@ export default function Header() {
       <MetroTransitHubModal
         isOpen={showMetroTransitHub}
         onClose={() => setShowMetroTransitHub(false)}
+      />
+      <RentReceiptGeneratorModal
+        isOpen={showRentReceipt}
+        onClose={() => setShowRentReceipt(false)}
       />
       <FAQModal
         isOpen={showFAQ}
