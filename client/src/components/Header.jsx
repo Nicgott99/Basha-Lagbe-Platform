@@ -15,7 +15,8 @@ import FAQModal from "./FAQModal";
 import MoversCostEstimatorModal from "./MoversCostEstimatorModal";
 import UtilityBillSplitterModal from "./UtilityBillSplitterModal";
 import TenancyAgreementGeneratorModal from "./TenancyAgreementGeneratorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature } from "lucide-react";
+import MetroTransitHubModal from "./MetroTransitHubModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -35,6 +36,7 @@ export default function Header() {
   const [showMoversEstimator, setShowMoversEstimator] = useState(false);
   const [showUtilitySplitter, setShowUtilitySplitter] = useState(false);
   const [showAgreementGenerator, setShowAgreementGenerator] = useState(false);
+  const [showMetroTransitHub, setShowMetroTransitHub] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -201,6 +203,14 @@ export default function Header() {
           >
             <FileSignature className="w-4 h-4 text-purple-400" />
             <span>Rental Deed (চুক্তিপত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMetroTransitHub(true)}
+            className="flex items-center gap-1.5 text-emerald-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Train className="w-4 h-4 text-emerald-400" />
+            <span>Metro Rail Hub</span>
           </button>
           <button
             type="button"
@@ -446,6 +456,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowMetroTransitHub(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-emerald-300 hover:text-white transition duration-200"
+          >
+            <Train className="w-4 h-4 text-emerald-400" />
+            <span>Dhaka Metro Rail (MRT) Living Hub</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -523,6 +544,10 @@ export default function Header() {
       <TenancyAgreementGeneratorModal
         isOpen={showAgreementGenerator}
         onClose={() => setShowAgreementGenerator(false)}
+      />
+      <MetroTransitHubModal
+        isOpen={showMetroTransitHub}
+        onClose={() => setShowMetroTransitHub(false)}
       />
       <FAQModal
         isOpen={showFAQ}
