@@ -17,7 +17,8 @@ import UtilityBillSplitterModal from "./UtilityBillSplitterModal";
 import TenancyAgreementGeneratorModal from "./TenancyAgreementGeneratorModal";
 import MetroTransitHubModal from "./MetroTransitHubModal";
 import RentReceiptGeneratorModal from "./RentReceiptGeneratorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText } from "lucide-react";
+import DmpCimsVerificationModal from "./DmpCimsVerificationModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -39,6 +40,7 @@ export default function Header() {
   const [showAgreementGenerator, setShowAgreementGenerator] = useState(false);
   const [showMetroTransitHub, setShowMetroTransitHub] = useState(false);
   const [showRentReceipt, setShowRentReceipt] = useState(false);
+  const [showDmpCims, setShowDmpCims] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -221,6 +223,14 @@ export default function Header() {
           >
             <Receipt className="w-4 h-4 text-cyan-400" />
             <span>Money Receipt (ভাড়ার রসিদ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowDmpCims(true)}
+            className="flex items-center gap-1.5 text-rose-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            <span>DMP Police Form (CIMS)</span>
           </button>
           <button
             type="button"
@@ -488,6 +498,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowDmpCims(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-rose-300 hover:text-white transition duration-200"
+          >
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            <span>DMP Police Verification Form (CIMS)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -573,6 +594,10 @@ export default function Header() {
       <RentReceiptGeneratorModal
         isOpen={showRentReceipt}
         onClose={() => setShowRentReceipt(false)}
+      />
+      <DmpCimsVerificationModal
+        isOpen={showDmpCims}
+        onClose={() => setShowDmpCims(false)}
       />
       <FAQModal
         isOpen={showFAQ}
