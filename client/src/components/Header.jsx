@@ -19,7 +19,8 @@ import MetroTransitHubModal from "./MetroTransitHubModal";
 import RentReceiptGeneratorModal from "./RentReceiptGeneratorModal";
 import DmpCimsVerificationModal from "./DmpCimsVerificationModal";
 import NoticeToVacateGeneratorModal from "./NoticeToVacateGeneratorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail } from "lucide-react";
+import PropertyConditionReportModal from "./PropertyConditionReportModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -43,6 +44,7 @@ export default function Header() {
   const [showRentReceipt, setShowRentReceipt] = useState(false);
   const [showDmpCims, setShowDmpCims] = useState(false);
   const [showNoticeToVacate, setShowNoticeToVacate] = useState(false);
+  const [showPropertyInspection, setShowPropertyInspection] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -241,6 +243,14 @@ export default function Header() {
           >
             <Mail className="w-4 h-4 text-amber-400" />
             <span>Notice to Vacate (নোটিশ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowPropertyInspection(true)}
+            className="flex items-center gap-1.5 text-emerald-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <ClipboardCheck className="w-4 h-4 text-emerald-400" />
+            <span>Handover Audit (ইনভেন্টরি)</span>
           </button>
           <button
             type="button"
@@ -530,6 +540,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowPropertyInspection(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-emerald-300 hover:text-white transition duration-200"
+          >
+            <ClipboardCheck className="w-4 h-4 text-emerald-400" />
+            <span>Property Handover & Inventory Audit (ইনভেন্টরি রিপোর্ট)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -623,6 +644,10 @@ export default function Header() {
       <NoticeToVacateGeneratorModal
         isOpen={showNoticeToVacate}
         onClose={() => setShowNoticeToVacate(false)}
+      />
+      <PropertyConditionReportModal
+        isOpen={showPropertyInspection}
+        onClose={() => setShowPropertyInspection(false)}
       />
       <FAQModal
         isOpen={showFAQ}
