@@ -21,7 +21,8 @@ import DmpCimsVerificationModal from "./DmpCimsVerificationModal";
 import NoticeToVacateGeneratorModal from "./NoticeToVacateGeneratorModal";
 import PropertyConditionReportModal from "./PropertyConditionReportModal";
 import RentalIncomeTaxCalculatorModal from "./RentalIncomeTaxCalculatorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins } from "lucide-react";
+import PropertyMaintenanceTrackerModal from "./PropertyMaintenanceTrackerModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -47,6 +48,7 @@ export default function Header() {
   const [showNoticeToVacate, setShowNoticeToVacate] = useState(false);
   const [showPropertyInspection, setShowPropertyInspection] = useState(false);
   const [showRentalTax, setShowRentalTax] = useState(false);
+  const [showMaintenanceTracker, setShowMaintenanceTracker] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -261,6 +263,14 @@ export default function Header() {
           >
             <Coins className="w-4 h-4 text-yellow-400" />
             <span>Tax & Holding (আয়কর)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMaintenanceTracker(true)}
+            className="flex items-center gap-1.5 text-amber-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Wrench className="w-4 h-4 text-amber-400" />
+            <span>Repairs & Ledger (মেরামত)</span>
           </button>
           <button
             type="button"
@@ -572,6 +582,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowMaintenanceTracker(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-amber-300 hover:text-white transition duration-200"
+          >
+            <Wrench className="w-4 h-4 text-amber-400" />
+            <span>Property Maintenance & Rent Ledger (বাসা মেরামত ও ব্যয়)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -673,6 +694,10 @@ export default function Header() {
       <RentalIncomeTaxCalculatorModal
         isOpen={showRentalTax}
         onClose={() => setShowRentalTax(false)}
+      />
+      <PropertyMaintenanceTrackerModal
+        isOpen={showMaintenanceTracker}
+        onClose={() => setShowMaintenanceTracker(false)}
       />
       <FAQModal
         isOpen={showFAQ}
