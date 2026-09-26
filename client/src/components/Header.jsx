@@ -22,6 +22,7 @@ import NoticeToVacateGeneratorModal from "./NoticeToVacateGeneratorModal";
 import PropertyConditionReportModal from "./PropertyConditionReportModal";
 import RentalIncomeTaxCalculatorModal from "./RentalIncomeTaxCalculatorModal";
 import PropertyMaintenanceTrackerModal from "./PropertyMaintenanceTrackerModal";
+import SubletAgreementGeneratorModal from "./SubletAgreementGeneratorModal";
 import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench } from "lucide-react";
 
 export default function Header() {
@@ -49,6 +50,7 @@ export default function Header() {
   const [showPropertyInspection, setShowPropertyInspection] = useState(false);
   const [showRentalTax, setShowRentalTax] = useState(false);
   const [showMaintenanceTracker, setShowMaintenanceTracker] = useState(false);
+  const [showSubletAgreement, setShowSubletAgreement] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -271,6 +273,14 @@ export default function Header() {
           >
             <Wrench className="w-4 h-4 text-amber-400" />
             <span>Repairs & Ledger (মেরামত)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowSubletAgreement(true)}
+            className="flex items-center gap-1.5 text-purple-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Users className="w-4 h-4 text-purple-400" />
+            <span>Sublet Deed (সাবলেট চুক্তি)</span>
           </button>
           <button
             type="button"
@@ -593,6 +603,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowSubletAgreement(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-purple-300 hover:text-white transition duration-200"
+          >
+            <Users className="w-4 h-4 text-purple-400" />
+            <span>Sublet Agreement & Mess Rules (সাবলেট ও মেস চুক্তিপত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -698,6 +719,10 @@ export default function Header() {
       <PropertyMaintenanceTrackerModal
         isOpen={showMaintenanceTracker}
         onClose={() => setShowMaintenanceTracker(false)}
+      />
+      <SubletAgreementGeneratorModal
+        isOpen={showSubletAgreement}
+        onClose={() => setShowSubletAgreement(false)}
       />
       <FAQModal
         isOpen={showFAQ}
