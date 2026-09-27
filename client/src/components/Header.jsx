@@ -23,7 +23,8 @@ import PropertyConditionReportModal from "./PropertyConditionReportModal";
 import RentalIncomeTaxCalculatorModal from "./RentalIncomeTaxCalculatorModal";
 import PropertyMaintenanceTrackerModal from "./PropertyMaintenanceTrackerModal";
 import SubletAgreementGeneratorModal from "./SubletAgreementGeneratorModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench } from "lucide-react";
+import DomesticStaffManagerModal from "./DomesticStaffManagerModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -51,6 +52,7 @@ export default function Header() {
   const [showRentalTax, setShowRentalTax] = useState(false);
   const [showMaintenanceTracker, setShowMaintenanceTracker] = useState(false);
   const [showSubletAgreement, setShowSubletAgreement] = useState(false);
+  const [showDomesticStaff, setShowDomesticStaff] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -281,6 +283,14 @@ export default function Header() {
           >
             <Users className="w-4 h-4 text-purple-400" />
             <span>Sublet Deed (সাবলেট চুক্তি)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowDomesticStaff(true)}
+            className="flex items-center gap-1.5 text-teal-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <HeartHandshake className="w-4 h-4 text-teal-400" />
+            <span>Maid & Salary (কাজের বুয়া)</span>
           </button>
           <button
             type="button"
@@ -614,6 +624,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowDomesticStaff(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-teal-300 hover:text-white transition duration-200"
+          >
+            <HeartHandshake className="w-4 h-4 text-teal-400" />
+            <span>Domestic Staff & Maid Salary (কাজের বুয়া ও বেতন)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -723,6 +744,10 @@ export default function Header() {
       <SubletAgreementGeneratorModal
         isOpen={showSubletAgreement}
         onClose={() => setShowSubletAgreement(false)}
+      />
+      <DomesticStaffManagerModal
+        isOpen={showDomesticStaff}
+        onClose={() => setShowDomesticStaff(false)}
       />
       <FAQModal
         isOpen={showFAQ}
