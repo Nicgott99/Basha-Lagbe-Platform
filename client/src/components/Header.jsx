@@ -24,6 +24,7 @@ import RentalIncomeTaxCalculatorModal from "./RentalIncomeTaxCalculatorModal";
 import PropertyMaintenanceTrackerModal from "./PropertyMaintenanceTrackerModal";
 import SubletAgreementGeneratorModal from "./SubletAgreementGeneratorModal";
 import DomesticStaffManagerModal from "./DomesticStaffManagerModal";
+import RentRevisionNoticeModal from "./RentRevisionNoticeModal";
 import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake } from "lucide-react";
 
 export default function Header() {
@@ -53,6 +54,7 @@ export default function Header() {
   const [showMaintenanceTracker, setShowMaintenanceTracker] = useState(false);
   const [showSubletAgreement, setShowSubletAgreement] = useState(false);
   const [showDomesticStaff, setShowDomesticStaff] = useState(false);
+  const [showRentRevision, setShowRentRevision] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -291,6 +293,14 @@ export default function Header() {
           >
             <HeartHandshake className="w-4 h-4 text-teal-400" />
             <span>Maid & Salary (কাজের বুয়া)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRentRevision(true)}
+            className="flex items-center gap-1.5 text-emerald-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <span>Rent Revision (ভাড়া বৃদ্ধি)</span>
           </button>
           <button
             type="button"
@@ -635,6 +645,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowRentRevision(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-emerald-300 hover:text-white transition duration-200"
+          >
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <span>Rent Increase Notice & Appeal (ভাড়া বৃদ্ধি নোটিশ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -748,6 +769,10 @@ export default function Header() {
       <DomesticStaffManagerModal
         isOpen={showDomesticStaff}
         onClose={() => setShowDomesticStaff(false)}
+      />
+      <RentRevisionNoticeModal
+        isOpen={showRentRevision}
+        onClose={() => setShowRentRevision(false)}
       />
       <FAQModal
         isOpen={showFAQ}
