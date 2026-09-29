@@ -25,7 +25,8 @@ import PropertyMaintenanceTrackerModal from "./PropertyMaintenanceTrackerModal";
 import SubletAgreementGeneratorModal from "./SubletAgreementGeneratorModal";
 import DomesticStaffManagerModal from "./DomesticStaffManagerModal";
 import RentRevisionNoticeModal from "./RentRevisionNoticeModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake } from "lucide-react";
+import CommercialTenancyNocModal from "./CommercialTenancyNocModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -55,6 +56,7 @@ export default function Header() {
   const [showSubletAgreement, setShowSubletAgreement] = useState(false);
   const [showDomesticStaff, setShowDomesticStaff] = useState(false);
   const [showRentRevision, setShowRentRevision] = useState(false);
+  const [showCommercialHub, setShowCommercialHub] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -301,6 +303,14 @@ export default function Header() {
           >
             <TrendingUp className="w-4 h-4 text-emerald-400" />
             <span>Rent Revision (ভাড়া বৃদ্ধি)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCommercialHub(true)}
+            className="flex items-center gap-1.5 text-teal-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Store className="w-4 h-4 text-teal-400" />
+            <span>Commercial NOC (ট্রেড লাইসেন্স)</span>
           </button>
           <button
             type="button"
@@ -656,6 +666,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowCommercialHub(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-teal-300 hover:text-white transition duration-200"
+          >
+            <Store className="w-4 h-4 text-teal-400" />
+            <span>Commercial Tenancy & Trade License NOC (ট্রেড লাইসেন্স এনওসি)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -773,6 +794,10 @@ export default function Header() {
       <RentRevisionNoticeModal
         isOpen={showRentRevision}
         onClose={() => setShowRentRevision(false)}
+      />
+      <CommercialTenancyNocModal
+        isOpen={showCommercialHub}
+        onClose={() => setShowCommercialHub(false)}
       />
       <FAQModal
         isOpen={showFAQ}
