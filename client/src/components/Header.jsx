@@ -28,7 +28,8 @@ import RentRevisionNoticeModal from "./RentRevisionNoticeModal";
 import CommercialTenancyNocModal from "./CommercialTenancyNocModal";
 import BuildingSocietyManagerModal from "./BuildingSocietyManagerModal";
 import KeyHandoverReceiptModal from "./KeyHandoverReceiptModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key } from "lucide-react";
+import RentCollectionLedgerModal from "./RentCollectionLedgerModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -61,6 +62,7 @@ export default function Header() {
   const [showCommercialHub, setShowCommercialHub] = useState(false);
   const [showBuildingSociety, setShowBuildingSociety] = useState(false);
   const [showKeyHandover, setShowKeyHandover] = useState(false);
+  const [showRentLedger, setShowRentLedger] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -331,6 +333,14 @@ export default function Header() {
           >
             <Key className="w-4 h-4 text-orange-400" />
             <span>Key Handover Receipt (চাবি জমা)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRentLedger(true)}
+            className="flex items-center gap-1.5 text-emerald-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            <span>Rent Ledger (ভাড়া খাতা)</span>
           </button>
           <button
             type="button"
@@ -719,6 +729,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowRentLedger(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-emerald-300 hover:text-white transition duration-200"
+          >
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            <span>Rent Collection Ledger & Khata (বাড়িভাড়া ও বকেয়া খাতা)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -848,6 +869,10 @@ export default function Header() {
       <KeyHandoverReceiptModal
         isOpen={showKeyHandover}
         onClose={() => setShowKeyHandover(false)}
+      />
+      <RentCollectionLedgerModal
+        isOpen={showRentLedger}
+        onClose={() => setShowRentLedger(false)}
       />
       <FAQModal
         isOpen={showFAQ}
