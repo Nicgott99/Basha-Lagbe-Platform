@@ -29,7 +29,8 @@ import CommercialTenancyNocModal from "./CommercialTenancyNocModal";
 import BuildingSocietyManagerModal from "./BuildingSocietyManagerModal";
 import KeyHandoverReceiptModal from "./KeyHandoverReceiptModal";
 import RentCollectionLedgerModal from "./RentCollectionLedgerModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen } from "lucide-react";
+import TenantReferenceVerificationModal from "./TenantReferenceVerificationModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -63,6 +64,7 @@ export default function Header() {
   const [showBuildingSociety, setShowBuildingSociety] = useState(false);
   const [showKeyHandover, setShowKeyHandover] = useState(false);
   const [showRentLedger, setShowRentLedger] = useState(false);
+  const [showTenantVerification, setShowTenantVerification] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -341,6 +343,14 @@ export default function Header() {
           >
             <BookOpen className="w-4 h-4 text-emerald-400" />
             <span>Rent Ledger (ভাড়া খাতা)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowTenantVerification(true)}
+            className="flex items-center gap-1.5 text-blue-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Award className="w-4 h-4 text-blue-400" />
+            <span>Tenant Verification (প্রত্যয়ন পত্র)</span>
           </button>
           <button
             type="button"
@@ -740,6 +750,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowTenantVerification(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-blue-300 hover:text-white transition duration-200"
+          >
+            <Award className="w-4 h-4 text-blue-400" />
+            <span>Tenant Reference & Verification (ভাড়াটিয়া প্রত্যয়ন পত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -873,6 +894,10 @@ export default function Header() {
       <RentCollectionLedgerModal
         isOpen={showRentLedger}
         onClose={() => setShowRentLedger(false)}
+      />
+      <TenantReferenceVerificationModal
+        isOpen={showTenantVerification}
+        onClose={() => setShowTenantVerification(false)}
       />
       <FAQModal
         isOpen={showFAQ}
