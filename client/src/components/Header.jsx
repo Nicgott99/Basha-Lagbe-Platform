@@ -30,7 +30,8 @@ import BuildingSocietyManagerModal from "./BuildingSocietyManagerModal";
 import KeyHandoverReceiptModal from "./KeyHandoverReceiptModal";
 import RentCollectionLedgerModal from "./RentCollectionLedgerModal";
 import TenantReferenceVerificationModal from "./TenantReferenceVerificationModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award } from "lucide-react";
+import UtilityComplaintDisputeModal from "./UtilityComplaintDisputeModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -65,6 +66,7 @@ export default function Header() {
   const [showKeyHandover, setShowKeyHandover] = useState(false);
   const [showRentLedger, setShowRentLedger] = useState(false);
   const [showTenantVerification, setShowTenantVerification] = useState(false);
+  const [showUtilityDispute, setShowUtilityDispute] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -351,6 +353,14 @@ export default function Header() {
           >
             <Award className="w-4 h-4 text-blue-400" />
             <span>Tenant Verification (প্রত্যয়ন পত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUtilityDispute(true)}
+            className="flex items-center gap-1.5 text-amber-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <AlertOctagon className="w-4 h-4 text-amber-400" />
+            <span>Utility Dispute (ওয়াসা/বিদ্যুৎ অভিযোগ)</span>
           </button>
           <button
             type="button"
@@ -761,6 +771,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowUtilityDispute(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-amber-300 hover:text-white transition duration-200"
+          >
+            <AlertOctagon className="w-4 h-4 text-amber-400" />
+            <span>Utility Dispute & Complaint Hub (ওয়াসা, ডেসকো ও গ্যাস অভিযোগ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -898,6 +919,10 @@ export default function Header() {
       <TenantReferenceVerificationModal
         isOpen={showTenantVerification}
         onClose={() => setShowTenantVerification(false)}
+      />
+      <UtilityComplaintDisputeModal
+        isOpen={showUtilityDispute}
+        onClose={() => setShowUtilityDispute(false)}
       />
       <FAQModal
         isOpen={showFAQ}
