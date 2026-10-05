@@ -31,7 +31,8 @@ import KeyHandoverReceiptModal from "./KeyHandoverReceiptModal";
 import RentCollectionLedgerModal from "./RentCollectionLedgerModal";
 import TenantReferenceVerificationModal from "./TenantReferenceVerificationModal";
 import UtilityComplaintDisputeModal from "./UtilityComplaintDisputeModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon } from "lucide-react";
+import SecurityDepositSettlementModal from "./SecurityDepositSettlementModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -67,6 +68,7 @@ export default function Header() {
   const [showRentLedger, setShowRentLedger] = useState(false);
   const [showTenantVerification, setShowTenantVerification] = useState(false);
   const [showUtilityDispute, setShowUtilityDispute] = useState(false);
+  const [showDepositSettlement, setShowDepositSettlement] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -361,6 +363,14 @@ export default function Header() {
           >
             <AlertOctagon className="w-4 h-4 text-amber-400" />
             <span>Utility Dispute (ওয়াসা/বিদ্যুৎ অভিযোগ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowDepositSettlement(true)}
+            className="flex items-center gap-1.5 text-emerald-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Scale className="w-4 h-4 text-emerald-400" />
+            <span>Deposit Settlement (জামানত নিষ্পত্তি)</span>
           </button>
           <button
             type="button"
@@ -782,6 +792,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowDepositSettlement(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-emerald-300 hover:text-white transition duration-200"
+          >
+            <Scale className="w-4 h-4 text-emerald-400" />
+            <span>Security Deposit Settlement Hub (জামানত ফেরত ও নিষ্পত্তি পত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -923,6 +944,10 @@ export default function Header() {
       <UtilityComplaintDisputeModal
         isOpen={showUtilityDispute}
         onClose={() => setShowUtilityDispute(false)}
+      />
+      <SecurityDepositSettlementModal
+        isOpen={showDepositSettlement}
+        onClose={() => setShowDepositSettlement(false)}
       />
       <FAQModal
         isOpen={showFAQ}
