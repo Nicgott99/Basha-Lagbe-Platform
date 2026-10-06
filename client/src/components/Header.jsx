@@ -32,7 +32,8 @@ import RentCollectionLedgerModal from "./RentCollectionLedgerModal";
 import TenantReferenceVerificationModal from "./TenantReferenceVerificationModal";
 import UtilityComplaintDisputeModal from "./UtilityComplaintDisputeModal";
 import SecurityDepositSettlementModal from "./SecurityDepositSettlementModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale } from "lucide-react";
+import HouseMovingPlannerModal from "./HouseMovingPlannerModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -69,6 +70,7 @@ export default function Header() {
   const [showTenantVerification, setShowTenantVerification] = useState(false);
   const [showUtilityDispute, setShowUtilityDispute] = useState(false);
   const [showDepositSettlement, setShowDepositSettlement] = useState(false);
+  const [showMovingPlanner, setShowMovingPlanner] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -371,6 +373,14 @@ export default function Header() {
           >
             <Scale className="w-4 h-4 text-emerald-400" />
             <span>Deposit Settlement (জামানত নিষ্পত্তি)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowMovingPlanner(true)}
+            className="flex items-center gap-1.5 text-teal-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Compass className="w-4 h-4 text-teal-400" />
+            <span>Moving Planner (বাসা বদল রোডম্যাপ)</span>
           </button>
           <button
             type="button"
@@ -803,6 +813,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowMovingPlanner(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-teal-300 hover:text-white transition duration-200"
+          >
+            <Compass className="w-4 h-4 text-teal-400" />
+            <span>House Shifting & Moving Planner (বাসা বদল ও প্যাকিং রোডম্যাপ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -948,6 +969,10 @@ export default function Header() {
       <SecurityDepositSettlementModal
         isOpen={showDepositSettlement}
         onClose={() => setShowDepositSettlement(false)}
+      />
+      <HouseMovingPlannerModal
+        isOpen={showMovingPlanner}
+        onClose={() => setShowMovingPlanner(false)}
       />
       <FAQModal
         isOpen={showFAQ}
