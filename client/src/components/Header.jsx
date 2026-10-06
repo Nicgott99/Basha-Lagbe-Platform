@@ -33,7 +33,8 @@ import TenantReferenceVerificationModal from "./TenantReferenceVerificationModal
 import UtilityComplaintDisputeModal from "./UtilityComplaintDisputeModal";
 import SecurityDepositSettlementModal from "./SecurityDepositSettlementModal";
 import HouseMovingPlannerModal from "./HouseMovingPlannerModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass } from "lucide-react";
+import RenovationNocPermitModal from "./RenovationNocPermitModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -71,6 +72,7 @@ export default function Header() {
   const [showUtilityDispute, setShowUtilityDispute] = useState(false);
   const [showDepositSettlement, setShowDepositSettlement] = useState(false);
   const [showMovingPlanner, setShowMovingPlanner] = useState(false);
+  const [showRenovationNoc, setShowRenovationNoc] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -381,6 +383,14 @@ export default function Header() {
           >
             <Compass className="w-4 h-4 text-teal-400" />
             <span>Moving Planner (বাসা বদল রোডম্যাপ)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowRenovationNoc(true)}
+            className="flex items-center gap-1.5 text-cyan-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <HardHat className="w-4 h-4 text-cyan-400" />
+            <span>Renovation NOC (সংস্কার অনুমতিপত্র)</span>
           </button>
           <button
             type="button"
@@ -824,6 +834,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowRenovationNoc(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-cyan-300 hover:text-white transition duration-200"
+          >
+            <HardHat className="w-4 h-4 text-cyan-400" />
+            <span>Flat Renovation NOC & Work Permit (ফ্ল্যাট সংস্কার ও এসি অনুমতিপত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -973,6 +994,10 @@ export default function Header() {
       <HouseMovingPlannerModal
         isOpen={showMovingPlanner}
         onClose={() => setShowMovingPlanner(false)}
+      />
+      <RenovationNocPermitModal
+        isOpen={showRenovationNoc}
+        onClose={() => setShowRenovationNoc(false)}
       />
       <FAQModal
         isOpen={showFAQ}
