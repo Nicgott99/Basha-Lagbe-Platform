@@ -34,7 +34,8 @@ import UtilityComplaintDisputeModal from "./UtilityComplaintDisputeModal";
 import SecurityDepositSettlementModal from "./SecurityDepositSettlementModal";
 import HouseMovingPlannerModal from "./HouseMovingPlannerModal";
 import RenovationNocPermitModal from "./RenovationNocPermitModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat } from "lucide-react";
+import ParkingRentalAgreementModal from "./ParkingRentalAgreementModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat, Car } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -73,6 +74,7 @@ export default function Header() {
   const [showDepositSettlement, setShowDepositSettlement] = useState(false);
   const [showMovingPlanner, setShowMovingPlanner] = useState(false);
   const [showRenovationNoc, setShowRenovationNoc] = useState(false);
+  const [showParkingModal, setShowParkingModal] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -391,6 +393,14 @@ export default function Header() {
           >
             <HardHat className="w-4 h-4 text-cyan-400" />
             <span>Renovation NOC (সংস্কার অনুমতিপত্র)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowParkingModal(true)}
+            className="flex items-center gap-1.5 text-blue-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Car className="w-4 h-4 text-blue-400" />
+            <span>Parking Deed (পার্কিং চুক্তি)</span>
           </button>
           <button
             type="button"
@@ -845,6 +855,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowParkingModal(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-blue-300 hover:text-white transition duration-200"
+          >
+            <Car className="w-4 h-4 text-blue-400" />
+            <span>Parking Space Lease & Garage Pass (গাড়ি পার্কিং ভাড়া চুক্তি ও স্টিকার)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -998,6 +1019,10 @@ export default function Header() {
       <RenovationNocPermitModal
         isOpen={showRenovationNoc}
         onClose={() => setShowRenovationNoc(false)}
+      />
+      <ParkingRentalAgreementModal
+        isOpen={showParkingModal}
+        onClose={() => setShowParkingModal(false)}
       />
       <FAQModal
         isOpen={showFAQ}
