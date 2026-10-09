@@ -35,7 +35,8 @@ import SecurityDepositSettlementModal from "./SecurityDepositSettlementModal";
 import HouseMovingPlannerModal from "./HouseMovingPlannerModal";
 import RenovationNocPermitModal from "./RenovationNocPermitModal";
 import ParkingRentalAgreementModal from "./ParkingRentalAgreementModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat, Car } from "lucide-react";
+import PetTenancyAgreementModal from "./PetTenancyAgreementModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat, Car, Dog } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -75,6 +76,7 @@ export default function Header() {
   const [showMovingPlanner, setShowMovingPlanner] = useState(false);
   const [showRenovationNoc, setShowRenovationNoc] = useState(false);
   const [showParkingModal, setShowParkingModal] = useState(false);
+  const [showPetModal, setShowPetModal] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -401,6 +403,14 @@ export default function Header() {
           >
             <Car className="w-4 h-4 text-blue-400" />
             <span>Parking Deed (পার্কিং চুক্তি)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowPetModal(true)}
+            className="flex items-center gap-1.5 text-rose-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <Dog className="w-4 h-4 text-rose-400" />
+            <span>Pet Policy (পোষা প্রাণী চুক্তি)</span>
           </button>
           <button
             type="button"
@@ -866,6 +876,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowPetModal(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-rose-300 hover:text-white transition duration-200"
+          >
+            <Dog className="w-4 h-4 text-rose-400" />
+            <span>Pet Tenancy Policy & Pet Passport (পোষা প্রাণী চুক্তি ও অঙ্গীকারনামা)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -1023,6 +1044,10 @@ export default function Header() {
       <ParkingRentalAgreementModal
         isOpen={showParkingModal}
         onClose={() => setShowParkingModal(false)}
+      />
+      <PetTenancyAgreementModal
+        isOpen={showPetModal}
+        onClose={() => setShowPetModal(false)}
       />
       <FAQModal
         isOpen={showFAQ}
