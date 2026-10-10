@@ -38,7 +38,8 @@ import ParkingRentalAgreementModal from "./ParkingRentalAgreementModal";
 import PetTenancyAgreementModal from "./PetTenancyAgreementModal";
 import CommunityEventBookingModal from "./CommunityEventBookingModal";
 import FireSafetyEvacuationModal from "./FireSafetyEvacuationModal";
-import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat, Car, Dog, PartyPopper, Flame } from "lucide-react";
+import TenantExitClearanceModal from "./TenantExitClearanceModal";
+import { Calculator, MapPin, CheckSquare, TrendingUp, Users, PhoneCall, HelpCircle, Truck, Receipt, FileSignature, Train, FileText, ShieldAlert, Mail, ClipboardCheck, Coins, Wrench, HeartHandshake, Store, Building, Key, BookOpen, Award, AlertOctagon, Scale, Compass, HardHat, Car, Dog, PartyPopper, Flame, FileCheck } from "lucide-react";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
@@ -81,6 +82,7 @@ export default function Header() {
   const [showPetModal, setShowPetModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showFireSafetyModal, setShowFireSafetyModal] = useState(false);
+  const [showExitClearanceModal, setShowExitClearanceModal] = useState(false);
   const toast = useToast();
   // useStickyHeader: adds shadow + bg-white once user scrolls past 80px
   const { isSticky } = useStickyHeader({ threshold: 80, hysteresis: true });
@@ -431,6 +433,14 @@ export default function Header() {
           >
             <Flame className="w-4 h-4 text-red-400" />
             <span>Fire Safety & Evacuation (অগ্নি নির্বাপণ ও মহড়া)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowExitClearanceModal(true)}
+            className="flex items-center gap-1.5 text-teal-300 hover:text-white transition duration-300 font-semibold pb-1"
+          >
+            <FileCheck className="w-4 h-4 text-teal-400" />
+            <span>Exit Clearance & Gate Pass (ছাড়পত্র ও গেট পাস)</span>
           </button>
           <button
             type="button"
@@ -929,6 +939,17 @@ export default function Header() {
           <button
             type="button"
             onClick={() => {
+              setShowExitClearanceModal(true);
+              closeMobileMenu();
+            }}
+            className="flex items-center gap-2 w-full text-left py-2 px-3 rounded-md font-bold text-teal-300 hover:text-white transition duration-200"
+          >
+            <FileCheck className="w-4 h-4 text-teal-400" />
+            <span>Tenant Exit Clearance & Gate Pass (ভাড়াটিয়া ছাড়পত্র ও গেট পাস)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setShowFAQ(true);
               closeMobileMenu();
             }}
@@ -1098,6 +1119,10 @@ export default function Header() {
       <FireSafetyEvacuationModal
         isOpen={showFireSafetyModal}
         onClose={() => setShowFireSafetyModal(false)}
+      />
+      <TenantExitClearanceModal
+        isOpen={showExitClearanceModal}
+        onClose={() => setShowExitClearanceModal(false)}
       />
       <FAQModal
         isOpen={showFAQ}
